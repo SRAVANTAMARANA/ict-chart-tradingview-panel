@@ -1,0 +1,30 @@
+version: "3.9"
+
+services:
+  backend:
+    build: ./backend
+    container_name: astro-ict-backend
+    restart: unless-stopped
+    environment:
+      - TWELVEDATA_APIKEY=${TWELVEDATA_APIKEY}
+      - FINNHUB_KEY=${FINNHUB_KEY}
+      - API_CACHE_TTL=${API_CACHE_TTL:-60}
+    ports:
+      - "8000:8000"
+    networks:
+      - ict-net
+
+  frontend:
+    build: ./frontend
+    container_name: astro-ict-frontend
+    restart: unless-stopped
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    networks:
+      - ict-net
+
+networks:
+  ict-net:
+    driver: bridge
