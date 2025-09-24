@@ -1,0 +1,47 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Astro ICT Chart Panel</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="stylesheet" href="styles.css" />
+  <!-- TradingView Widget script -->
+  <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+
+  <!-- Lightweight charts (for overlays & signals) -->
+  <script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
+</head>
+<body>
+  <header>
+    <h1>Astro ICT Chart Panel</h1>
+    <div class="controls">
+      <input id="symbolInput" value="AAPL" />
+      <select id="intervalSelect">
+        <option value="1m">1m</option>
+        <option value="5m" selected>5m</option>
+        <option value="15m">15m</option>
+        <option value="1h">1h</option>
+        <option value="1d">1d</option>
+      </select>
+
+      <button id="tabTv">TradingView</button>
+      <button id="tabSignals">Signals (Lightweight)</button>
+      <button id="loadBtn">Load</button>
+    </div>
+  </header>
+
+  <main>
+    <section id="tvSection" class="tab">
+      <!-- TradingView container -->
+      <div id="tradingview" style="height:600px; width:100%;"></div>
+    </section>
+
+    <section id="signalsSection" class="tab hidden">
+      <div id="lwchart" style="height:600px;"></div>
+      <div id="log"></div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
