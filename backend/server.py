@@ -1,14 +1,26 @@
 import os
 import time
 from fastapi import FastAPI, HTTPException, Query
+from fastapi.middleware.cors import CORSMiddleware
 from typing import List, Optional
 import httpx
+import asyncio
+from fastapi import WebSocket, WebSocketDisconnect
 
 TWELVE = os.getenv("TWELVEDATA_APIKEY", "")
 FINNHUB = os.getenv("FINNHUB_KEY", "")
 CACHE_TTL = int(os.getenv("API_CACHE_TTL", "30"))
 
 app = FastAPI(title="ICT backend")
+
+# Allow the frontend (served on localhost:3000) to call this API
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "OPTIONS"],
+    allow_headers=["*"],
+)
 
 _cache = {}  # simple in-memory cache: key -> (ts, payload)
 
@@ -103,3 +115,48 @@ async def get_candles(symbol: str = Query(...), interval: str = Query("1m"), lim
         return fh
 
     raise HTTPException(status_code=502, detail="No data from upstream APIs. Check API keys.")
+
+
+@app.websocket("/ict/ws")
+async def websocket_candles(websocket: WebSocket):
+    """WebSocket endpoint that pushes candle payloads periodically.
+
+    Query params: symbol, interval, limit
+    Sends the same JSON payload as GET /ict/candles.
+    """
+    await websocket.accept()
+    params = websocket.query_params
+    symbol = params.get("symbol") or "AAPL"
+    interval = params.get("interval") or "1m"
+    try:
+        limit = int(params.get("limit") or 200)
+    except Exception:
+        limit = 200
+
+    POLL_SECONDS = 30
+    try:
+        while True:
+            # Try to reuse existing cache/get functions
+            key = f"{symbol}:{interval}:{limit}"
+            cached = cache_get(key)
+            if cached:
+                payload = cached
+            else:
+                tw = await fetch_twelvedata(symbol, interval, limit)
+                if tw and tw.get("candles"):
+                    payload = tw
+                    cache_set(key, payload)
+                else:
+                    fh = await fetch_finnhub(symbol, interval, limit)
+                    if fh and fh.get("candles"):
+                        payload = fh
+                        cache_set(key, payload)
+                    else:
+                        payload = {"source": "none", "symbol": symbol, "candles": []}
+
+            # Send payload
+            await websocket.send_json(payload)
+            await asyncio.sleep(POLL_SECONDS)
+    except WebSocketDisconnect:
+        # client disconnected
+        return
