@@ -59,7 +59,21 @@ function createLWChart(){
   const el = document.getElementById('lwchart');
   el.innerHTML = "";
   chart = LightweightCharts.createChart(el, { width: el.clientWidth, height: 600 });
-  candleSeries = chart.addCandlestickSeries();
+  // v5 lightweight-charts exposes addSeries(type, options) on the chart instance.
+  // Use the CandlestickSeries factory from the global LightweightCharts object.
+  try {
+    // Try older helper API first (some bundles expose this)
+  
+    if (typeof chart.addCandlestickSeries === 'function') {
+      candleSeries = chart.addCandlestickSeries();
+    } else if (typeof chart.addSeries === 'function' && window.LightweightCharts && window.LightweightCharts.CandlestickSeries) {
+      candleSeries = chart.addSeries(window.LightweightCharts.CandlestickSeries, {});
+    } else {
+      console.error('LightweightCharts: no compatible add-series API found');
+    }
+  } catch (err) {
+    console.error('createLWChart error while creating series:', err);
+  }
 }
 
 function isoToTime(v){

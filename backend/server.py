@@ -32,7 +32,10 @@ async def fetch_twelvedata(symbol, interval, limit):
     if not TWELVE:
         return None
     url = "https://api.twelvedata.com/time_series"
-    params = {"symbol": symbol, "interval": interval, "outputsize": limit, "format": "JSON", "apikey": TWELVE}
+    # map interval formats from frontend (e.g. '5m') to TwelveData (e.g. '5min')
+    mapping = {"1m": "1min", "5m": "5min", "15m": "15min", "1h": "1h", "1d": "1day"}
+    td_interval = mapping.get(interval, interval)
+    params = {"symbol": symbol, "interval": td_interval, "outputsize": limit, "format": "JSON", "apikey": TWELVE}
     async with httpx.AsyncClient(timeout=10) as client:
         r = await client.get(url, params=params)
         if r.status_code != 200:
