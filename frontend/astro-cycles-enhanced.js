@@ -36,14 +36,13 @@ class AstroCyclesModule {
     // Floating table controls
     document.addEventListener('click', (e) => {
       if (e.target.id === 'showFloatingTableBtn') {
-        // Open the full-page astro view with table fixed below the 3D orbit
+        // Open the standalone planetary table page (prefer same tab for quick view)
         try {
           const dateStr = this.currentDate.toISOString().split('T')[0];
-          // Open in a new tab so users can keep the dashboard open
-          // static server serves the file at /astro-full.html
-          window.open(`/astro-full.html?date=${encodeURIComponent(dateStr)}`, '_blank');
+          // open in same tab so user lands on the full table view
+          window.location.href = `/astro-table.html?date=${encodeURIComponent(dateStr)}`;
         } catch (err) {
-          // Fallback to the floating table if anything goes wrong
+          // Fallback to the floating table if navigation fails
           this.showFloatingTable();
         }
       }
