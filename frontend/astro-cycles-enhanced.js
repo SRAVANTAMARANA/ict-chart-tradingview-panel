@@ -378,10 +378,15 @@ class AstroCyclesModule {
       // Create table rows (include Telugu column when available)
       body.innerHTML = this.planetaryData.map(planet => {
         const teluguCell = hasTelugu ? `<td style="padding:4px 6px; border:1px solid var(--border-color); font-size:11px;">${teluguMap[planet.name] || ''}</td>` : '';
+        // build icon links: colored circle opens standalone table (same tab), info opens planet detail (new tab)
+        const safeName = encodeURIComponent(planet.name);
+        const coloredCircle = `<a href="/astro-table.html?scrollTo=${safeName}" title="Open table and scroll to ${planet.name}" style="display:inline-block;text-decoration:none;margin-right:6px"><div style="width:12px;height:12px;border-radius:50%;background:${planet.color};display:inline-block;border:1px solid rgba(255,255,255,0.06)"></div></a>`;
+        const infoLink = `<a href="/astro-planet.html?planet=${safeName}" target="_blank" title="Open ${planet.name} details" style="display:inline-block;text-decoration:none;margin-left:4px;color:rgba(255,255,255,0.8);font-size:12px;vertical-align:middle">ℹ️</a>`;
+        const iconHtml = coloredCircle + infoLink;
         return `
         <tr style="transition: background 0.2s ease;">
           <td style="padding:4px 6px; border:1px solid var(--border-color); font-size:11px; color:${planet.color};">
-            ${planet.symbol} ${planet.name}
+            ${iconHtml} ${planet.symbol} ${planet.name}
           </td>
           <td style="padding:4px 6px; border:1px solid var(--border-color); font-size:11px;">
             ${planet.sign}
