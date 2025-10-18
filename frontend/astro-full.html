@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Astro — Full Orbit View</title>
+  <style>
+    :root{--bg:#000814;--card:#001427;--muted:#7a8a97;--accent:#00e5ff;--text:#e6f0ff}
+    html,body{height:100%;margin:0;background:linear-gradient(180deg,#000814 0%, #001427 60%);color:var(--text);font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial}
+    .container{display:flex;flex-direction:column;height:100vh}
+    .header{padding:12px 20px;display:flex;align-items:center;justify-content:space-between}
+    .canvas-wrap{flex:1;display:flex;align-items:center;justify-content:center}
+    #orbitCanvas{width:100%;height:100%;display:block}
+    .table-wrap{background:linear-gradient(180deg,#001219,#001e2b);padding:12px 18px;border-top:1px solid rgba(255,255,255,0.03)}
+    table{width:100%;border-collapse:collapse}
+    th,td{padding:8px 10px;border-bottom:1px solid rgba(255,255,255,0.03);font-size:13px;text-align:left}
+    th{color:var(--accent);font-weight:700}
+    /* sticky header */
+    thead th{position:sticky;top:0;background:linear-gradient(180deg,rgba(0,0,0,0.3),rgba(0,0,0,0.15));backdrop-filter: blur(4px);z-index:4}
+    tbody tr:hover{background:rgba(255,255,255,0.02)}
+    .small{font-size:12px;color:var(--muted)}
+    .controls{display:flex;gap:8px;align-items:center}
+    .btn{background:#002b36;border:1px solid rgba(255,255,255,0.04);color:var(--text);padding:6px 10px;border-radius:6px;cursor:pointer}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div>
+        <div style="font-weight:700;font-size:18px">Astro Full Orbit</div>
+        <div class="small">3D NASA-style orbits with planetary table below</div>
+        <div id="aiMentorSummary" style="margin-top:6px;color:var(--accent);font-size:13px;display:none">🤖 AI Mentor: <span id="aiMentorText">Loading...</span></div>
+      </div>
+      <div class="controls">
+        <input id="fullDateInput" type="date" class="btn" />
+        <button id="refreshBtn" class="btn">Refresh</button>
+        <button id="closeBtn" class="btn">Close</button>
+      </div>
+    </div>
+    <div class="canvas-wrap">
+      <div id="loadingOverlay" style="position:absolute;left:0;top:56px;right:0;bottom:320px;display:flex;align-items:center;justify-content:center;pointer-events:none;">
+        <div id="spinner" style="width:56px;height:56px;border-radius:50%;border:6px solid rgba(255,255,255,0.08);border-top-color:var(--accent);animation:spin 1s linear infinite"></div>
+      </div>
+      <canvas id="orbitCanvas"></canvas>
+    </div>
+    <div class="table-wrap">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <div style="font-weight:600">Planetary Positions</div>
+        <div id="ephemTime" class="small"></div>
+      </div>
+      <div style="overflow:auto;max-height:260px">
+        <table id="fullPlanetTable">
+          <thead id="fullPlanetHead"></thead>
+          <tbody id="fullPlanetBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Three.js CDN -->
+  <script src="https://unpkg.com/three@0.162.0/build/three.min.js"></script>
+  <script src="https://unpkg.com/three@0.162.0/examples/js/controls/OrbitControls.js"></script>
+  <script src="/astro-full.js"></script>
+  <script>
+    // default date to today for convenience
+    try {
+      const el = document.getElementById('fullDateInput');
+      if (el) {
+        const d = new Date();
+        const iso = d.toISOString().slice(0,10);
+        el.value = iso;
+      }
+      document.getElementById('closeBtn')?.addEventListener('click', () => { window.location.href = '/'; });
+    } catch(_) {}
+  </script>
+  <style>
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    /* small responsive tweak to ensure overlay sits above canvas */
+    .canvas-wrap{position:relative}
+  </style>
+</body>
+</html>
