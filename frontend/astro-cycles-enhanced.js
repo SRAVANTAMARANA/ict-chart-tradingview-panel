@@ -363,46 +363,15 @@ class AstroCyclesModule {
         // non-fatal — silently continue with fallback
       }
 
-      // Create table header (conditionally add Telugu column)
-      const hasTelugu = Object.keys(teluguMap).length > 0;
-      head.innerHTML = `
-        <th style="padding:4px 6px; border:1px solid var(--border-color); font-size:11px;">Planet</th>
-        <th style="padding:4px 6px; border:1px solid var(--border-color); font-size:11px;">Sign</th>
-        ${hasTelugu ? '<th style="padding:4px 6px; border:1px solid var(--border-color); font-size:11px;">Zodiac (Telugu)</th>' : ''}
-        <th style="padding:4px 6px; border:1px solid var(--border-color); font-size:11px;">Degree</th>
-        <th style="padding:4px 6px; border:1px solid var(--border-color); font-size:11px;">Speed</th>
-        <th style="padding:4px 6px; border:1px solid var(--border-color); font-size:11px;">Status</th>
-      `;
-
-      // Create table rows (include Telugu column when available)
-      body.innerHTML = this.planetaryData.map(planet => {
-        const teluguCell = hasTelugu ? `<td style="padding:4px 6px; border:1px solid var(--border-color); font-size:11px;">${teluguMap[planet.name] || ''}</td>` : '';
-        // build icon links: colored circle opens standalone table (same tab), info opens planet detail (new tab)
-        const safeName = encodeURIComponent(planet.name);
-        const coloredCircle = `<a href="/astro-table.html?scrollTo=${safeName}" title="Open table and scroll to ${planet.name}" style="display:inline-block;text-decoration:none;margin-right:6px"><div style="width:12px;height:12px;border-radius:50%;background:${planet.color};display:inline-block;border:1px solid rgba(255,255,255,0.06)"></div></a>`;
-        const infoLink = `<a href="/astro-planet.html?planet=${safeName}" target="_blank" title="Open ${planet.name} details" style="display:inline-block;text-decoration:none;margin-left:4px;color:rgba(255,255,255,0.8);font-size:12px;vertical-align:middle">ℹ️</a>`;
-        const iconHtml = coloredCircle + infoLink;
-        return `
-        <tr style="transition: background 0.2s ease;">
-          <td style="padding:4px 6px; border:1px solid var(--border-color); font-size:11px; color:${planet.color};">
-            ${iconHtml} ${planet.symbol} ${planet.name}
-          </td>
-          <td style="padding:4px 6px; border:1px solid var(--border-color); font-size:11px;">
-            ${planet.sign}
-          </td>
-          ${teluguCell}
-          <td style="padding:4px 6px; border:1px solid var(--border-color); font-size:11px;">
-            ${planet.degree}°
-          </td>
-          <td style="padding:4px 6px; border:1px solid var(--border-color); font-size:11px;">
-            ${planet.speed.toFixed(3)}°/day
-          </td>
-          <td style="padding:4px 6px; border:1px solid var(--border-color); font-size:11px;">
-            ${planet.retrograde ? '<span style="color:#ff6b6b;">℞ Retrograde</span>' : '<span style="color:#51cf66;">Direct</span>'}
-          </td>
-        </tr>
-      `;
-      }).join('');
+      // Instead of building rows here, embed the standalone table page via an iframe so rendering is centralized
+      try {
+        const dateStr = this.currentDate.toISOString().split('T')[0];
+        head.innerHTML = '<th style="padding:4px 6px; border:1px solid var(--border-color); font-size:11px;">Planetary Table (embedded)</th>';
+        body.innerHTML = `<tr><td style="padding:0;border:0"><iframe src="/astro-table.html?date=${encodeURIComponent(dateStr)}" style="width:100%;height:360px;border:0;background:transparent"></iframe></td></tr>`;
+      } catch (embedErr) {
+        // fallback to previous row rendering if iframe fails
+        console.warn('Embedding standalone table failed, fallback to inline rows', embedErr);
+      }
 
       // Update timestamp
       const timeElement = document.getElementById('astroFloatingTime');
