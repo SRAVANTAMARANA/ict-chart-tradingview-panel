@@ -33,6 +33,10 @@
 
       const hasTelugu = Object.keys(teluguMap).length>0;
       head.innerHTML = `<tr><th>Icon</th><th>Planet</th><th>Sign</th>${hasTelugu?'<th>Telugu</th>':''}<th>Degree</th><th>Speed</th><th>Status</th></tr>`;
+      if (!body) {
+        console.warn('table body element not found');
+        return;
+      }
       body.innerHTML = '';
       epList.forEach((p,idx)=>{
         const name = p.name||p.planet||p._raw||'';
@@ -68,6 +72,9 @@
               }
               match.classList.add('astro-highlight');
               setTimeout(() => match.classList.remove('astro-highlight'), 2200);
+            }
+            else {
+              console.warn('scrollTo param provided but no matching planet row found for', target);
             }
           }
         } catch (err) {
