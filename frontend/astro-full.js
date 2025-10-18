@@ -138,7 +138,7 @@
         <th style="width:36px;padding:6px">Icon</th>
         <th>Planet</th>
         <th>Sign</th>
-        ${hasTelugu?'<th>Zodiac (Telugu)':'<th style="display:none">'}
+        ${hasTelugu?'<th>Zodiac (Telugu)</th>':'<th style="display:none"></th>'}
         <th>Degree</th>
         <th>Speed</th>
         <th>Status</th>
@@ -207,10 +207,11 @@
       if (spinner) spinner.style.display = 'none';
       if (loadingOverlay) loadingOverlay.style.pointerEvents = 'none';
 
-    } catch (err) {
+      } catch (err) {
       console.error('Failed to load ephemeris:', err);
       head.innerHTML = '';
-      body.innerHTML = '<tr><td colspan="6">Unable to load ephemeris for this date.</td></tr>';
+      // table has up to 7 columns (Icon, Planet, Sign, Zodiac, Degree, Speed, Status)
+      body.innerHTML = '<tr><td colspan="7">Unable to load ephemeris for this date.</td></tr>';
     }
   }
 
