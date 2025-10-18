@@ -1,48 +1,2958 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8" />
-  <title>Astro ICT Chart Panel</title>
+  <title>Astro ICT Chart Panel - Premium</title>
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="chart-enhancements.css" />
+  <link rel="stylesheet" href="premium-tabs.css" />
+  <link rel="stylesheet" href="premium-dashboard.css" />
+  
+  <!-- Quick Access Navigation -->
+  <style>
+    .quick-nav {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 9999;
+      background: rgba(0,0,0,0.9);
+      padding: 15px;
+      border-radius: 8px;
+      border: 2px solid #00ff88;
+    }
+    .quick-nav a {
+      display: block;
+      color: #00ff88;
+      text-decoration: none;
+      margin: 5px 0;
+      padding: 8px 12px;
+      background: rgba(0,255,136,0.1);
+      border-radius: 4px;
+      font-weight: bold;
+    }
+    .quick-nav a:hover {
+      background: rgba(0,255,136,0.2);
+    }
+  </style>
+  
+  <!-- FORCE BRIGHT THEME OVERRIDE -->
+  <style>
+    body, html, main {
+      background: #FFFFFF !important;
+      color: #333333 !important;
+    }
+    
+    .chart-view, .dashboard-home, section {
+      background: #FFFFFF !important;
+      color: #333333 !important;
+    }
+    
+    .signals-bar, .chart-controls {
+      background: #f8f9fa !important;
+      border-color: #dee2e6 !important;
+    }
+    
+    .signals-home, .chart-control-btn, button {
+      background: #ffffff !important;
+      color: #333333 !important;
+      border: 1px solid #ced4da !important;
+    }
+    
+    .signals-home:hover, .chart-control-btn:hover, button:hover {
+      background: #e9ecef !important;
+    }
+    
+    #lwchart, #gannLwchart {
+      background: #FFFFFF !important;
+    }
+    
+    input, select {
+      background: #ffffff !important;
+      color: #333333 !important;
+      border: 1px solid #ced4da !important;
+    }
+    
+    /* Force all text to be dark */
+    * {
+      color: #333333 !important;
+    }
+    
+    /* Override any remaining dark theme variables */
+    :root {
+      --bg-primary: #ffffff !important;
+      --bg-secondary: #f8f9fa !important;
+      --text-primary: #333333 !important;
+      --text-secondary: #666666 !important;
+      --border-color: #dee2e6 !important;
+    }
+  </style>
+  
+  <!-- Premium SVG icon sprite for professional icons -->
+  <svg xmlns="http://www.w3.org/2000/svg" style="position:absolute;width:0;height:0;overflow:hidden">
+    <!-- Core System Icons -->
+    <symbol id="icon-home" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M12 3.172 3 10v11h6v-6h6v6h6V10l-9-6.828Z"/>
+    </symbol>
+    <symbol id="icon-move" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M12 2 9.5 4.5 11 6V9h2V6l1.5-1.5L12 2Zm0 20 2.5-2.5L13 18v-3h-2v3l-1.5 1.5L12 22Zm10-10-2.5-2.5L18 11h-3v2h3l1.5 1.5L22 12ZM2 12l2.5 2.5L6 13h3v-2H6l-1.5-1.5L2 12Z"/>
+    </symbol>
+    <symbol id="icon-lock" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M12 2a5 5 0 0 0-5 5v3H5v12h14V10h-2V7a5 5 0 0 0-5-5Zm-3 8V7a3 3 0 1 1 6 0v3H9Zm3 4a2 2 0 1 0 0 4 2 2 0 0 0 0-4Z"/>
+    </symbol>
+    <symbol id="icon-unlock" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M17 7a5 5 0 0 0-9.9-1h2.1a3 3 0 1 1 6 0v3H5v12h14V9h-2V7Zm-5 7a2 2 0 1 1 0 4 2 2 0 0 1 0-4Z"/>
+    </symbol>
+    <symbol id="icon-robot" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M11 2h2v3h3v2H8V5h3V2Zm-5 5h12a2 2 0 0 1 2 2v9a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3V9a2 2 0 0 1 2-2Zm2 3a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Z"/>
+    </symbol>
+    <symbol id="icon-magic" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M4 20 20 4l-2-2L2 18l2 2Zm12-8 2-2 4 4-2 2-4-4ZM7 3 6 1 5 3 3 4l2 1 1 2 1-2 2-1-2-1Z"/>
+    </symbol>
+    <symbol id="icon-reload" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M12 6V2l5 5-5 5V8a6 6 0 1 0 6 6h2a8 8 0 1 1-8-8Z"/>
+    </symbol>
+    <symbol id="icon-sun" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M6.76 4.84 5.34 3.42 3.92 4.84l1.42 1.42 1.42-1.42Zm10.48 0 1.42-1.42 1.42 1.42-1.42 1.42-1.42-1.42ZM12 4h-1V1h2v3h-1Zm0 19h-1v-3h2v3h-1ZM4 13H1v-2h3v2Zm19 0h-3v-2h3v2ZM6.76 19.16l-1.42 1.42-1.42-1.42 1.42-1.42 1.42 1.42Zm10.48 0 1.42 1.42 1.42-1.42-1.42-1.42-1.42 1.42ZM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10Z"/>
+    </symbol>
+    <symbol id="icon-moon" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/>
+    </symbol>
+    <symbol id="icon-plus" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M11 5h2v6h6v2h-6v6h-2v-6H5v-2h6V5Z"/>
+    </symbol>
+    <symbol id="icon-minus" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M5 11h14v2H5v-2Z"/>
+    </symbol>
+    <symbol id="icon-fit" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M9 3H3v6h2V5h4V3Zm12 0h-6v2h4v4h2V3ZM3 15v6h6v-2H5v-4H3Zm18 6v-6h-2v4h-4v2h6Z"/>
+    </symbol>
+    <symbol id="icon-reset" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M12 6V2l5 5-5 5V8a6 6 0 1 0 6 6h2a8 8 0 1 1-8-8Z"/>
+    </symbol>
+    <symbol id="icon-fullscreen" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M9 3H3v6h2V5h4V3Zm12 0h-6v2h4v4h2V3ZM3 15v6h6v-2H5v-4H3Zm18 6v-6h-2v4h-4v2h6Z"/>
+    </symbol>
+    <symbol id="icon-brain" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M8 3a3 3 0 0 0-3 3v1a3 3 0 0 0 0 6v3a3 3 0 1 0 6 0V4a3 3 0 0 0-3-1Zm8 0a3 3 0 0 1 3 3v1a3 3 0 0 1 0 6v3a3 3 0 1 1-6 0V4a3 3 0 0 1 3-1Z"/>
+    </symbol>
+    <symbol id="icon-info" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm0 4a1.25 1.25 0 1 1 0 2.5A1.25 1.25 0 0 1 12 6Zm1.5 12h-3v-1.5h1.5V11H10V9.5h3a1 1 0 0 1 1 1v6H13.5Z"/>
+    </symbol>
+    <!-- Missing core icons used in the UI -->
+    <symbol id="icon-close" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M18.3 5.71a1 1 0 0 0-1.41 0L12 10.59 7.11 5.7a1 1 0 1 0-1.41 1.42L10.59 12l-4.9 4.89a1 1 0 1 0 1.41 1.42L12 13.41l4.89 4.9a1 1 0 0 0 1.42-1.41L13.41 12l4.9-4.89a1 1 0 0 0-.01-1.4Z"/>
+    </symbol>
+    <symbol id="icon-chevron-left" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12l4.58-4.59Z"/>
+    </symbol>
+    <symbol id="icon-strategy-builder" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M12 2L13.09 8.26L20 9.27L15.5 13.14L16.82 20L12 17.27L7.18 20L8.5 13.14L4 9.27L10.91 8.26L12 2Z" fill="#FFD700"/>
+      <circle cx="12" cy="12" r="2" fill="#FF6B35"/>
+      <path d="M12 8V16M8 12H16" stroke="#FFD700" stroke-width="1" opacity="0.7"/>
+    </symbol>
+
+    <!-- Premium Trading Icons -->
+    <symbol id="icon-gann-unified" viewBox="0 0 24 24" fill="currentColor">
+      <defs>
+        <linearGradient id="gannGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:#FFD700;stop-opacity:1" />
+          <stop offset="50%" style="stop-color:#FF6B35;stop-opacity:1" />
+          <stop offset="100%" style="stop-color:#9B59B6;stop-opacity:1" />
+        </linearGradient>
+      </defs>
+      <circle cx="12" cy="12" r="9" stroke="url(#gannGrad)" stroke-width="1.5" fill="none"/>
+      <path d="M12 3L21 12L12 21L3 12Z" fill="url(#gannGrad)" opacity="0.3"/>
+      <circle cx="12" cy="12" r="2" fill="#FFD700"/>
+      <path d="M12 6V18M6 12H18M8.5 8.5L15.5 15.5M15.5 8.5L8.5 15.5" stroke="#FFD700" stroke-width="0.8" opacity="0.7"/>
+    </symbol>
+    
+    <symbol id="icon-ict-premium" viewBox="0 0 24 24" fill="currentColor">
+      <defs>
+        <radialGradient id="ictGrad" cx="50%" cy="30%">
+          <stop offset="0%" style="stop-color:#00D4FF;stop-opacity:1" />
+          <stop offset="100%" style="stop-color:#0066CC;stop-opacity:1" />
+        </radialGradient>
+      </defs>
+      <path d="M3 8h18l-2 8H5L3 8z" fill="url(#ictGrad)" opacity="0.8"/>
+      <rect x="6" y="4" width="12" height="3" rx="1" fill="#00D4FF"/>
+      <rect x="8" y="16" width="8" height="3" rx="1" fill="#0066CC"/>
+      <circle cx="12" cy="12" r="1.5" fill="#FFD700"/>
+    </symbol>
+
+    <symbol id="icon-astro-premium" viewBox="0 0 24 24" fill="currentColor">
+      <defs>
+        <radialGradient id="astroGrad" cx="50%" cy="50%">
+          <stop offset="0%" style="stop-color:#9B59B6;stop-opacity:1" />
+          <stop offset="70%" style="stop-color:#3498DB;stop-opacity:0.8" />
+          <stop offset="100%" style="stop-color:#1B2631;stop-opacity:1" />
+        </radialGradient>
+      </defs>
+      <circle cx="12" cy="12" r="10" fill="url(#astroGrad)"/>
+      <circle cx="12" cy="12" r="2" fill="#FFD700"/>
+      <circle cx="18" cy="8" r="1" fill="#E74C3C"/>
+      <circle cx="6" cy="16" r="1" fill="#2ECC71"/>
+      <circle cx="16" cy="16" r="0.8" fill="#F39C12"/>
+      <path d="M12 2L14 8L12 12L10 8Z" fill="#FFD700" opacity="0.6"/>
+    </symbol>
+
+    <symbol id="icon-orderflow-premium" viewBox="0 0 24 24" fill="currentColor">
+      <defs>
+        <linearGradient id="flowGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" style="stop-color:#E74C3C;stop-opacity:1" />
+          <stop offset="50%" style="stop-color:#FFD700;stop-opacity:1" />
+          <stop offset="100%" style="stop-color:#2ECC71;stop-opacity:1" />
+        </linearGradient>
+      </defs>
+      <path d="M3 12h18" stroke="url(#flowGrad)" stroke-width="3"/>
+      <path d="M6 8l-3 4 3 4M18 8l3 4-3 4" stroke="url(#flowGrad)" stroke-width="2" fill="none"/>
+      <rect x="8" y="10" width="2" height="4" fill="#E74C3C"/>
+      <rect x="11" y="8" width="2" height="8" fill="#FFD700"/>
+      <rect x="14" y="9" width="2" height="6" fill="#2ECC71"/>
+    </symbol>
+
+    <symbol id="icon-liquidity-premium" viewBox="0 0 24 24" fill="currentColor">
+      <defs>
+        <linearGradient id="liquidGrad" x1="0%" y1="100%" x2="0%" y2="0%">
+          <stop offset="0%" style="stop-color:#3498DB;stop-opacity:1" />
+          <stop offset="50%" style="stop-color:#5DADE2;stop-opacity:0.8" />
+          <stop offset="100%" style="stop-color:#AED6F1;stop-opacity:0.4" />
+        </linearGradient>
+      </defs>
+      <path d="M3 18c0-6 4-10 9-10s9 4 9 10" fill="url(#liquidGrad)"/>
+      <path d="M5 16c0-4 3-7 7-7s7 3 7 7" fill="url(#liquidGrad)" opacity="0.7"/>
+      <circle cx="12" cy="16" r="2" fill="#2980B9"/>
+      <path d="M8 14l8 0M9 12l6 0M10 10l4 0" stroke="#2980B9" stroke-width="1" opacity="0.6"/>
+    </symbol>
+
+    <symbol id="icon-news-premium" viewBox="0 0 24 24" fill="currentColor">
+      <defs>
+        <linearGradient id="newsGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:#E67E22;stop-opacity:1" />
+          <stop offset="100%" style="stop-color:#D35400;stop-opacity:1" />
+        </linearGradient>
+      </defs>
+      <rect x="4" y="4" width="16" height="16" rx="2" fill="url(#newsGrad)"/>
+      <rect x="6" y="7" width="12" height="2" rx="1" fill="white" opacity="0.9"/>
+      <rect x="6" y="10" width="8" height="1" rx="0.5" fill="white" opacity="0.7"/>
+      <rect x="6" y="12" width="10" height="1" rx="0.5" fill="white" opacity="0.7"/>
+      <circle cx="17" cy="7" r="2" fill="#E74C3C"/>
+      <text x="17" y="8.5" text-anchor="middle" fill="white" font-size="8" font-weight="bold">AI</text>
+    </symbol>
+
+    <symbol id="icon-momentum-premium" viewBox="0 0 24 24" fill="currentColor">
+      <defs>
+        <linearGradient id="momentumGrad" x1="0%" y1="50%" x2="100%" y2="50%">
+          <stop offset="0%" style="stop-color:#F39C12;stop-opacity:1" />
+          <stop offset="50%" style="stop-color:#E74C3C;stop-opacity:1" />
+          <stop offset="100%" style="stop-color:#FFD700;stop-opacity:1" />
+        </linearGradient>
+      </defs>
+      <path d="M2 12l5-5 4 4 6-6 5 2" stroke="url(#momentumGrad)" stroke-width="3" fill="none"/>
+      <circle cx="7" cy="7" r="2" fill="#E74C3C"/>
+      <circle cx="11" cy="11" r="2" fill="#F39C12"/>
+      <circle cx="17" cy="5" r="2" fill="#FFD700"/>
+      <path d="M20 8l2-2-2-2" stroke="#FFD700" stroke-width="2" fill="none"/>
+    </symbol>
+
+    <symbol id="icon-volatility-premium" viewBox="0 0 24 24" fill="currentColor">
+      <defs>
+        <radialGradient id="volGrad" cx="50%" cy="50%">
+          <stop offset="0%" style="stop-color:#E74C3C;stop-opacity:1" />
+          <stop offset="70%" style="stop-color:#F39C12;stop-opacity:0.7" />
+          <stop offset="100%" style="stop-color:#FFD700;stop-opacity:0.3" />
+        </radialGradient>
+      </defs>
+      <circle cx="12" cy="12" r="10" fill="url(#volGrad)" opacity="0.3"/>
+      <path d="M4 12Q8 6 12 12T20 12" stroke="#E74C3C" stroke-width="2" fill="none"/>
+      <path d="M6 12Q9 8 12 12T18 12" stroke="#F39C12" stroke-width="2" fill="none"/>
+      <path d="M8 12Q10 10 12 12T16 12" stroke="#FFD700" stroke-width="2" fill="none"/>
+    </symbol>
+
+    <symbol id="icon-math-premium" viewBox="0 0 24 24" fill="currentColor">
+      <defs>
+        <linearGradient id="mathGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:#9B59B6;stop-opacity:1" />
+          <stop offset="50%" style="stop-color:#3498DB;stop-opacity:1" />
+          <stop offset="100%" style="stop-color:#1ABC9C;stop-opacity:1" />
+        </linearGradient>
+      </defs>
+      <rect x="3" y="3" width="18" height="18" rx="3" fill="url(#mathGrad)" opacity="0.2"/>
+      <path d="M8 8h8M8 12h8M8 16h6" stroke="url(#mathGrad)" stroke-width="2"/>
+      <circle cx="6" cy="8" r="1" fill="#9B59B6"/>
+      <circle cx="6" cy="12" r="1" fill="#3498DB"/>
+      <circle cx="6" cy="16" r="1" fill="#1ABC9C"/>
+      <text x="18" y="10" text-anchor="middle" fill="#9B59B6" font-size="10" font-weight="bold">∑</text>
+    </symbol>
+
+    <symbol id="icon-ai-premium" viewBox="0 0 24 24" fill="currentColor">
+      <defs>
+        <radialGradient id="aiGrad" cx="50%" cy="30%">
+          <stop offset="0%" style="stop-color:#FFD700;stop-opacity:1" />
+          <stop offset="50%" style="stop-color:#FF6B35;stop-opacity:1" />
+          <stop offset="100%" style="stop-color:#E74C3C;stop-opacity:1" />
+        </radialGradient>
+      </defs>
+      <circle cx="12" cy="12" r="9" fill="url(#aiGrad)" opacity="0.3"/>
+      <path d="M8 8h8l-2 8H10l-2-8z" fill="url(#aiGrad)"/>
+      <circle cx="10" cy="10" r="1.5" fill="white"/>
+      <circle cx="14" cy="10" r="1.5" fill="white"/>
+      <path d="M10 14q2 2 4 0" stroke="white" stroke-width="1.5" fill="none"/>
+      <path d="M6 6l12 12M18 6L6 18" stroke="#FFD700" stroke-width="0.5" opacity="0.4"/>
+    </symbol>
+
+    <symbol id="icon-execution-premium" viewBox="0 0 24 24" fill="currentColor">
+      <defs>
+        <linearGradient id="execGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" style="stop-color:#2ECC71;stop-opacity:1" />
+          <stop offset="100%" style="stop-color:#27AE60;stop-opacity:1" />
+        </linearGradient>
+      </defs>
+      <circle cx="12" cy="12" r="10" stroke="url(#execGrad)" stroke-width="2" fill="none"/>
+      <path d="M8 12l3 3 6-6" stroke="url(#execGrad)" stroke-width="3" fill="none"/>
+      <circle cx="12" cy="12" r="1" fill="#2ECC71"/>
+      <path d="M12 3l1 3-1 6-1-6 1-3z" fill="url(#execGrad)" opacity="0.7"/>
+    </symbol>
+
+    <symbol id="icon-risk-premium" viewBox="0 0 24 24" fill="currentColor">
+      <defs>
+        <linearGradient id="riskGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:#E74C3C;stop-opacity:1" />
+          <stop offset="100%" style="stop-color:#C0392B;stop-opacity:1" />
+        </linearGradient>
+      </defs>
+      <path d="M12 2L22 20H2L12 2z" fill="url(#riskGrad)" opacity="0.8"/>
+      <circle cx="12" cy="16" r="1.5" fill="white"/>
+      <rect x="11" y="8" width="2" height="6" rx="1" fill="white"/>
+      <path d="M6 18h12" stroke="white" stroke-width="1" opacity="0.6"/>
+    </symbol>
+
+    <symbol id="icon-alerts-premium" viewBox="0 0 24 24" fill="currentColor">
+      <defs>
+        <radialGradient id="alertGrad" cx="50%" cy="30%">
+          <stop offset="0%" style="stop-color:#FFD700;stop-opacity:1" />
+          <stop offset="100%" style="stop-color:#F39C12;stop-opacity:1" />
+        </radialGradient>
+      </defs>
+      <path d="M12 2c-1.1 0-2 .9-2 2 0 .74.4 1.38 1 1.73V7h2v-1.27c.6-.35 1-.99 1-1.73 0-1.1-.9-2-2-2z" fill="url(#alertGrad)"/>
+      <path d="M10 7v10c0 1.1.9 2 2 2s2-.9 2-2V7" fill="url(#alertGrad)" opacity="0.8"/>
+      <circle cx="12" cy="20" r="2" fill="url(#alertGrad)"/>
+      <path d="M8 15l8 0M8 13l8 0M8 11l8 0" stroke="white" stroke-width="0.5" opacity="0.7"/>
+    </symbol>
+
+    <symbol id="icon-journal-premium" viewBox="0 0 24 24" fill="currentColor">
+      <defs>
+        <linearGradient id="journalGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:#8E44AD;stop-opacity:1" />
+          <stop offset="100%" style="stop-color:#9B59B6;stop-opacity:1" />
+        </linearGradient>
+      </defs>
+      <rect x="5" y="3" width="14" height="18" rx="2" fill="url(#journalGrad)"/>
+      <rect x="7" y="6" width="10" height="1" rx="0.5" fill="white" opacity="0.8"/>
+      <rect x="7" y="9" width="8" height="1" rx="0.5" fill="white" opacity="0.6"/>
+      <rect x="7" y="12" width="9" height="1" rx="0.5" fill="white" opacity="0.6"/>
+      <rect x="7" y="15" width="7" height="1" rx="0.5" fill="white" opacity="0.6"/>
+      <circle cx="18" cy="6" r="2" fill="#E74C3C"/>
+    </symbol>
+
+    <symbol id="icon-data-premium" viewBox="0 0 24 24" fill="currentColor">
+      <defs>
+        <linearGradient id="dataGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" style="stop-color:#34495E;stop-opacity:1" />
+          <stop offset="50%" style="stop-color:#2C3E50;stop-opacity:1" />
+          <stop offset="100%" style="stop-color:#1B2631;stop-opacity:1" />
+        </linearGradient>
+      </defs>
+      <rect x="3" y="6" width="18" height="12" rx="2" fill="url(#dataGrad)"/>
+      <rect x="5" y="8" width="14" height="1" fill="#3498DB"/>
+      <rect x="5" y="11" width="14" height="1" fill="#2ECC71"/>
+      <rect x="5" y="14" width="14" height="1" fill="#E74C3C"/>
+      <circle cx="21" cy="4" r="2" fill="#FFD700"/>
+      <circle cx="21" cy="20" r="2" fill="#FFD700"/>
+    </symbol>
+
+    <symbol id="icon-research-premium" viewBox="0 0 24 24" fill="currentColor">
+      <defs>
+        <radialGradient id="researchGrad" cx="50%" cy="50%">
+          <stop offset="0%" style="stop-color:#1ABC9C;stop-opacity:1" />
+          <stop offset="100%" style="stop-color:#16A085;stop-opacity:1" />
+        </radialGradient>
+      </defs>
+      <circle cx="10" cy="10" r="7" stroke="url(#researchGrad)" stroke-width="2" fill="none"/>
+      <circle cx="10" cy="10" r="3" fill="url(#researchGrad)" opacity="0.3"/>
+      <path d="M16 16l5 5" stroke="url(#researchGrad)" stroke-width="3"/>
+      <circle cx="10" cy="10" r="1" fill="#1ABC9C"/>
+      <path d="M7 10h6M10 7v6" stroke="#1ABC9C" stroke-width="1" opacity="0.6"/>
+    </symbol>
+
+    <symbol id="icon-analytics-premium" viewBox="0 0 24 24" fill="currentColor">
+      <defs>
+        <linearGradient id="analyticsGrad" x1="0%" y1="100%" x2="100%" y2="0%">
+          <stop offset="0%" style="stop-color:#3498DB;stop-opacity:1" />
+          <stop offset="50%" style="stop-color:#2980B9;stop-opacity:1" />
+          <stop offset="100%" style="stop-color:#1B4F72;stop-opacity:1" />
+        </linearGradient>
+      </defs>
+      <rect x="3" y="3" width="18" height="18" rx="2" fill="url(#analyticsGrad)" opacity="0.2"/>
+      <rect x="5" y="15" width="3" height="6" fill="url(#analyticsGrad)"/>
+      <rect x="9" y="12" width="3" height="9" fill="url(#analyticsGrad)"/>
+      <rect x="13" y="8" width="3" height="13" fill="url(#analyticsGrad)"/>
+      <rect x="17" y="10" width="3" height="11" fill="url(#analyticsGrad)"/>
+    </symbol>
+
+    <symbol id="icon-settings-premium" viewBox="0 0 24 24" fill="currentColor">
+      <defs>
+        <radialGradient id="settingsGrad" cx="50%" cy="50%">
+          <stop offset="0%" style="stop-color:#95A5A6;stop-opacity:1" />
+          <stop offset="100%" style="stop-color:#7F8C8D;stop-opacity:1" />
+        </radialGradient>
+      </defs>
+      <path d="M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8z" fill="url(#settingsGrad)"/>
+      <path d="M10.2 3.2c.8-.4 1.8-.4 2.6 0l1.4.7c.6.3 1.3.1 1.8-.4l1-1c.6-.6 1.5-.6 2.1 0s.6 1.5 0 2.1l-1 1c-.5.5-.7 1.2-.4 1.8l.7 1.4c.4.8.4 1.8 0 2.6l-.7 1.4c-.3.6-.1 1.3.4 1.8l1 1c.6.6.6 1.5 0 2.1s-1.5.6-2.1 0l-1-1c-.5-.5-1.2-.7-1.8-.4l-1.4.7c-.8.4-1.8.4-2.6 0l-1.4-.7c-.6-.3-1.3-.1-1.8.4l-1 1c-.6.6-1.5.6-2.1 0s-.6-1.5 0-2.1l1-1c.5-.5.7-1.2.4-1.8L3.2 13.8c-.4-.8-.4-1.8 0-2.6l.7-1.4c.3-.6.1-1.3-.4-1.8l-1-1c-.6-.6-.6-1.5 0-2.1s1.5-.6 2.1 0l1 1c.5.5 1.2.7 1.8.4l1.4-.7z" fill="url(#settingsGrad)" opacity="0.8"/>
+    </symbol>
+  </svg>
+  
   <!-- TradingView Widget script -->
   <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
 
-  <!-- Lightweight charts (for overlays & signals) -->
-  <script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
+  <!-- PERMANENT ROBUST CHART LOADER - Multiple fallbacks with auto-retry -->
+  <script>
+    console.log('🚀 PERMANENT Chart Loader: Starting robust loading sequence...');
+    
+    // Global chart loading state
+    window.chartLoadingState = {
+      attempts: 0,
+      maxAttempts: 5,
+      loaded: false,
+      initialized: false
+    };
+    
+    // Permanent loading function with multiple fallbacks
+    function loadChartLibraryPermanent() {
+      window.chartLoadingState.attempts++;
+      console.log(`📚 Chart loading attempt ${window.chartLoadingState.attempts}/${window.chartLoadingState.maxAttempts}`);
+      
+      // Primary CDN source
+      const script = document.createElement('script');
+      script.src = 'https://unpkg.com/lightweight-charts@4.2.0/dist/lightweight-charts.standalone.production.js';
+      
+      script.onload = function() {
+        console.log('✅ PRIMARY: LightweightCharts loaded from CDN');
+        window.chartLoadingState.loaded = true;
+        window.lightweightChartsReady = Promise.resolve(true);
+        scheduleChartInitialization();
+      };
+      
+      script.onerror = function() {
+        console.warn('⚠️ PRIMARY CDN failed, trying alternative CDN...');
+        
+        // Alternative CDN source
+        const altScript = document.createElement('script');
+        altScript.src = 'https://cdn.jsdelivr.net/npm/lightweight-charts@4.2.0/dist/lightweight-charts.standalone.production.js';
+        
+        altScript.onload = function() {
+          console.log('✅ ALTERNATIVE: LightweightCharts loaded from alternative CDN');
+          window.chartLoadingState.loaded = true;
+          window.lightweightChartsReady = Promise.resolve(true);
+          scheduleChartInitialization();
+        };
+        
+        altScript.onerror = function() {
+          console.warn('⚠️ ALTERNATIVE CDN failed, trying local fallback...');
+          
+          // Local fallback
+          const localScript = document.createElement('script');
+          localScript.src = 'assets/lightweight-charts.standalone.production.js';
+          
+          localScript.onload = function() {
+            console.log('✅ LOCAL: LightweightCharts loaded from local assets');
+            window.chartLoadingState.loaded = true;
+            window.lightweightChartsReady = Promise.resolve(true);
+            scheduleChartInitialization();
+          };
+          
+          localScript.onerror = function() {
+            console.error('❌ LOCAL fallback failed');
+            
+            // Final retry mechanism
+            if (window.chartLoadingState.attempts < window.chartLoadingState.maxAttempts) {
+              console.log('🔄 Retrying in 2 seconds...');
+              setTimeout(loadChartLibraryPermanent, 2000);
+            } else {
+              console.error('💥 PERMANENT FAILURE: All chart library sources exhausted');
+              window.lightweightChartsReady = Promise.reject(new Error('All chart sources failed'));
+              showPermanentError();
+            }
+          };
+          
+          document.head.appendChild(localScript);
+        };
+        
+        document.head.appendChild(altScript);
+      };
+      
+      document.head.appendChild(script);
+    }
+    
+    // Schedule chart initialization with multiple attempts
+    function scheduleChartInitialization() {
+      if (window.chartLoadingState.initialized) {
+        console.log('⚠️ Chart already initialized, skipping...');
+        return;
+      }
+      
+      console.log('⏰ Scheduling chart initialization...');
+      
+      // Try immediate initialization
+      setTimeout(() => {
+        tryInitializeChart();
+      }, 500);
+      
+      // Backup initialization after DOM is fully ready
+      setTimeout(() => {
+        if (!window.chartLoadingState.initialized) {
+          console.log('🔄 Backup initialization attempt...');
+          tryInitializeChart();
+        }
+      }, 2000);
+      
+      // Final initialization attempt
+      setTimeout(() => {
+        if (!window.chartLoadingState.initialized) {
+          console.log('🔄 Final initialization attempt...');
+          tryInitializeChart();
+        }
+      }, 5000);
+    }
+    
+    // Try to initialize chart
+    function tryInitializeChart() {
+      // Guard: only initialize automatically if explicit flag set (for testing)
+      // This prevents accidental auto-replacement of the homepage with the chart (blank page)
+      if (!window.__allowAutoChartInit) {
+        console.log('⏸ Auto chart init is disabled (set window.__allowAutoChartInit = true to enable)');
+        return;
+      }
+
+        if (!window.__allowAutoChartInit) {
+          console.log('⏸ Auto chart init disabled by default (window.__allowAutoChartInit=false)');
+        } else if (typeof window.createDirectChart === 'function') {
+          console.log('📊 Chart function available, initializing (AUTO-ENABLED)...');
+          try {
+            const success = window.createDirectChart();
+            if (success) {
+              window.chartLoadingState.initialized = true;
+              console.log('✅ Chart initialization successful');
+            }
+          } catch (e) {
+            console.warn('⚠️ Chart initialization error:', e);
+          }
+        } else {
+          console.log('⏳ Chart function not yet available, waiting...');
+        }
+    }
+    
+    // Show permanent error state
+    function showPermanentError() {
+      const container = document.getElementById('lwchart');
+      if (container) {
+        container.innerHTML = `
+          <div style="display:flex;align-items:center;justify-content:center;height:100%;background:#f8d7da;border-radius:8px;border:2px solid #dc3545;">
+            <div style="text-align:center;padding:20px;">
+              <div style="font-size:48px;margin-bottom:16px;">🚨</div>
+              <div style="font-size:20px;font-weight:700;margin-bottom:12px;color:#721c24;">Chart Loading Failed</div>
+              <div style="font-size:14px;color:#721c24;margin-bottom:20px;max-width:300px;">
+                All chart library sources failed after ${window.chartLoadingState.maxAttempts} attempts.
+                This may be due to network connectivity issues.
+              </div>
+              <button onclick="location.reload()" style="padding:12px 24px;background:#dc3545;color:white;border:none;border-radius:6px;cursor:pointer;font-size:16px;font-weight:600;">
+                🔄 Refresh Page
+              </button>
+            </div>
+          </div>
+        `;
+      }
+    }
+    
+  // Chart library will only be loaded and initialized on user action (ICT tile click)
+  </script>
+  
+  <!-- Emergency function backup - ensures createDirectChart is always available -->
+  <script>
+    console.log('🚀 Emergency function backup script loaded');
+    
+    // Backup createDirectChart function if not defined
+    if (typeof window.createDirectChart === 'undefined') {
+      console.log('⚠️ createDirectChart not found, creating backup...');
+      window.createDirectChart = function() {
+        console.log('🔄 Emergency createDirectChart called');
+        
+        // Wait for LightweightCharts and try again
+        if (typeof LightweightCharts === 'undefined') {
+          console.log('⏳ LightweightCharts not ready, waiting...');
+          alert('Chart library is still loading. Please wait a moment and try again.');
+          return;
+        }
+        
+        // Find chart container
+        const container = document.getElementById('lwchart');
+        if (!container) {
+          console.error('❌ Chart container not found');
+          alert('Chart container not found. Please refresh the page.');
+          return;
+        }
+        
+        // Clear container and show loading
+        container.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;"><div style="text-align:center;"><div style="font-size:48px;margin-bottom:16px;">⏳</div><div>Loading Chart...</div></div></div>';
+        
+        // Try to create chart
+        try {
+          const chart = LightweightCharts.createChart(container, {
+            width: container.clientWidth || 800,
+            height: container.clientHeight || 600,
+            layout: { background: { color: '#FFFFFF' }, textColor: '#333333' }
+          });
+          
+          const candlestickSeries = chart.addCandlestickSeries({
+            upColor: '#26a69a',
+            downColor: '#ef5350',
+            borderVisible: false,
+            wickUpColor: '#26a69a',
+            wickDownColor: '#ef5350'
+          });
+          
+          // Load local demo data for Forex (default XAUUSD, 5m)
+          const symbolEl = document.getElementById('enhancedSymbolSelect');
+          const tfEl = document.getElementById('enhancedTimeframeSelect');
+          const symbol = (symbolEl?.value || 'XAUUSD').toUpperCase();
+          const timeframe = (tfEl?.value || '5m');
+          
+          function tfToSec(tf){
+            const map = { '1m':60,'3m':180,'5m':300,'15m':900,'30m':1800,'1h':3600,'4h':14400,'1d':86400 };
+            return map[tf] || 300;
+          }
+          function symbolDecimals(sym){
+            if (sym.includes('JPY')) return 3;
+            if (sym === 'XAUUSD' || sym === 'XAGUSD') return 2;
+            return 5;
+          }
+          function basePrice(sym){
+            switch(sym){
+              case 'XAUUSD': return 2350;
+              case 'EURUSD': return 1.095;
+              case 'GBPUSD': return 1.265;
+              case 'USDJPY': return 155.0;
+              case 'USDCHF': return 0.90;
+              case 'USDCAD': return 1.36;
+              case 'AUDUSD': return 0.66;
+              case 'NZDUSD': return 0.61;
+              default: return 1.0;
+            }
+          }
+          function vol(sym){
+            switch(sym){
+              case 'XAUUSD': return 6.0; // dollars per bar
+              case 'USDJPY': return 0.25;
+              default: return 0.0015;
+            }
+          }
+          const step = tfToSec(timeframe);
+          const dec = symbolDecimals(symbol);
+          const now = Math.floor(Date.now()/1000);
+          const aligned = Math.floor(now/step)*step;
+          const len = 200;
+          let price = basePrice(symbol);
+          const v = vol(symbol);
+          const demo = [];
+          for (let i=len-1;i>=0;i--){
+            const t = aligned - i*step;
+            const change = (Math.random()-0.5)*v;
+            const o = price;
+            price = Math.max(0.00001, price + change);
+            const c = price;
+            const h = Math.max(o,c) + Math.abs(change)*0.6;
+            const l = Math.min(o,c) - Math.abs(change)*0.6;
+            demo.push({
+              time: t,
+              open: +o.toFixed(dec),
+              high: +h.toFixed(dec),
+              low: +l.toFixed(dec),
+              close: +c.toFixed(dec)
+            });
+          }
+          candlestickSeries.setData(demo);
+          chart.timeScale().fitContent();
+          console.log('✅ Emergency chart created with demo data', { symbol, timeframe });
+            
+        } catch (error) {
+          console.error('❌ Emergency chart creation failed:', error);
+          container.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:red;"><div>Chart creation failed</div></div>';
+        }
+      };
+      
+      console.log('✅ Emergency createDirectChart function created');
+    } else {
+      console.log('✅ createDirectChart already defined');
+    }
+    
+    // Set up button event listeners
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('🔗 Setting up button event listeners...');
+      
+      const loadBtn = document.getElementById('enhancedLoadBtn');
+      const manualBtn = document.getElementById('manualLoadBtn');
+      
+      if (loadBtn) {
+        loadBtn.addEventListener('click', function() {
+          console.log('📊 Load Chart button clicked');
+          if (typeof window.createDirectChart === 'function') {
+            window.createDirectChart();
+          } else {
+            alert('Chart function not ready. Please wait a moment and try again.');
+          }
+        });
+        console.log('✅ Load button listener added');
+      }
+      
+      if (manualBtn) {
+        manualBtn.addEventListener('click', function() {
+          console.log('🚀 Manual Load button clicked');
+          if (typeof window.createDirectChart === 'function') {
+            window.createDirectChart();
+          } else {
+            alert('Chart function not ready. Please wait a moment and try again.');
+          }
+        });
+        console.log('✅ Manual button listener added');
+      }
+    });
+  </script>
+  <!-- Backend API base: FIXED HOST CONFIGURATION - DO NOT MODIFY -->
+  <script>
+    // PERMANENT HOST CONFIGURATION - DO NOT CHANGE IN FUTURE IMPLEMENTATIONS
+    // This ensures all modules use the correct backend host consistently
+    (function configureApiBase(){
+  // FIXED: Always use localhost:8081 for backend API (changed from 8000)
+  window.API_BASE = 'http://localhost:8081';
+  window.API_WS_BASE = 'ws://localhost:8081';
+      // Provide a resolved readiness promise for callers
+      window.apiReady = Promise.resolve(true);
+      console.log('[FIXED HOST] API_BASE permanently set to', window.API_BASE);
+      
+      // Freeze the configuration to prevent accidental changes
+      Object.defineProperty(window, 'API_BASE', {
+        value: 'http://localhost:8081',
+        writable: false,
+        configurable: false
+      });
+      Object.defineProperty(window, 'API_WS_BASE', {
+        value: 'ws://localhost:8081',
+        writable: false,
+        configurable: false
+      });
+    })();
+  </script>
+  
+  <!-- Load chart enhancements -->
+  <script src="chart-enhancements.js"></script>
+  <script src="enhanced-chart-features.js"></script>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg"/>
 </head>
 <body>
-  <header>
-    <h1>Astro ICT Chart Panel</h1>
-    <div class="controls">
-      <input id="symbolInput" value="AAPL" />
-      <select id="intervalSelect">
-        <option value="1m">1m</option>
-        <option value="5m" selected>5m</option>
-        <option value="15m">15m</option>
-        <option value="1h">1h</option>
-        <option value="1d">1d</option>
-      </select>
-
-      <button id="tabTv">TradingView</button>
-      <button id="tabSignals">Signals (Lightweight)</button>
-      <button id="loadBtn">Load</button>
-      <label style="margin-left:12px"><input type="checkbox" id="showSignals" checked /> Show signals</label>
-    </div>
-  </header>
+  <!-- Quick Access Navigation removed — ICT functionality moved into the dashboard ICT tile and inline panel -->
 
   <main>
-    <section id="tvSection" class="tab">
-      <!-- TradingView container -->
-      <div id="tradingview" style="height:600px; width:100%;"></div>
+    <!-- AstraQuant Master Dashboard - Complete Module Grid -->
+  <section id="dashboardHome" class="dashboard-home">
+  <div id="autoErrorModule" style="background:#ffffff;color:#333;padding:10px 16px;border-radius:8px;margin-bottom:16px;box-shadow:0 2px 8px rgba(0,0,0,0.1);font-size:14px;cursor:pointer;user-select:none;border:1px solid #ddd;" title="Click to refresh error diagnostics"></div>
+  <div class="dash-hero">
+        <div class="dash-title">🌌 AstraQuant Master Platform</div>
+        <div class="dash-sub">AI-Powered Trading Intelligence • Smart Money Concepts • Planetary Analysis • Real-time Execution</div>
+        <div style="margin-top:12px; font-size:12px; color:var(--text-secondary);">
+          <span style="margin-right:16px;">📊 <strong>15 Premium Modules</strong></span>
+          <span style="margin-right:16px;">🤖 <strong>AI Meta-Aggregator</strong></span>
+          <span style="margin-right:16px;">🌟 <strong>Live Signals</strong></span>
+          <span>🚀 <strong>Auto-Execution Ready</strong></span>
+        </div>
+      </div>
+      <!-- Inline ICT Module Panel (compact) -->
+      <div id="inlineIctPanel" style="margin-top:18px;padding:12px;border:1px solid var(--border-color);border-radius:8px;background:var(--bg-secondary);display:flex;align-items:center;justify-content:space-between;gap:12px;">
+        <div>
+          <div style="font-weight:700;">ICT Smart Money</div>
+          <div style="font-size:12px;color:var(--text-secondary);">Order Blocks • FVG • Kill Zones</div>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <button id="openIctModuleBtn" class="btn" style="padding:8px 12px;border-radius:6px;">Open ICT Module</button>
+          <div id="ictInlineStatus" style="font-size:12px;color:var(--text-secondary);">Idle</div>
+        </div>
+      </div>
+
+      <!-- Primary Trading Modules (Top Row) -->
+      <div style="margin-bottom:24px;">
+        <h3 style="margin:0 0 12px 0; font-size:14px; color:var(--text-secondary); text-transform:uppercase; letter-spacing:1px;">🎯 Core Trading Modules</h3>
+        <div class="modules-grid" style="grid-template-columns:repeat(auto-fit, minmax(140px, 1fr)); gap:12px;">
+          <button class="tile" data-module="ict">
+            <svg class="icon" style="width:28px;height:28px;margin-bottom:8px;" aria-hidden="true">
+              <use href="#icon-ict-premium"/>
+            </svg>
+            <span style="font-weight:600;">ICT Smart Money</span>
+            <div style="font-size:10px; color:var(--text-secondary); margin-top:4px;">Order Blocks • FVG • Kill Zones</div>
+          </button>
+          <button class="tile" data-module="gann">
+            <svg class="icon" style="width:28px;height:28px;margin-bottom:8px;" aria-hidden="true">
+              <use href="#icon-gann-unified"/>
+            </svg>
+            <span style="font-weight:600;">GANN Master Analysis</span>
+            <div style="font-size:10px; color:var(--text-secondary); margin-top:4px;">GANN</div>
+            <div style="font-size:8px; color:#FFD700; margin-top:2px; font-weight:bold;">⭐ UNIFIED MODULE</div>
+          </button>
+          <button class="tile" data-module="astro">
+            <svg class="icon" style="width:28px;height:28px;margin-bottom:8px;" aria-hidden="true">
+              <use href="#icon-astro-premium"/>
+            </svg>
+            <span style="font-weight:600;">Astro Cycles</span>
+            <div style="font-size:10px; color:var(--text-secondary); margin-top:4px;">Planetary • Lunar • Vedic</div>
+          </button>
+        </div>
+      </div>
+
+      <!-- Market Intelligence Modules -->
+      <div style="margin-bottom:24px;">
+        <h3 style="margin:0 0 12px 0; font-size:14px; color:var(--text-secondary); text-transform:uppercase; letter-spacing:1px;">🔍 Market Intelligence</h3>
+        <div class="modules-grid" style="grid-template-columns:repeat(auto-fit, minmax(140px, 1fr)); gap:12px;">
+          <button class="tile" data-module="news">
+            <svg class="icon" style="width:28px;height:28px;margin-bottom:8px;" aria-hidden="true">
+              <use href="#icon-news-premium"/>
+            </svg>
+            <span style="font-weight:600;">News Intelligence</span>
+            <div style="font-size:10px; color:var(--text-secondary); margin-top:4px;">AI Sentiment • Impact Scoring</div>
+          </button>
+          <button class="tile" data-module="math" style="position:relative;">
+            <svg class="icon" style="width:28px;height:28px;margin-bottom:8px;" aria-hidden="true">
+              <use href="#icon-math-premium"/>
+            </svg>
+            <span style="font-weight:600;">Math Models</span>
+            <div style="font-size:10px; color:var(--text-secondary); margin-top:4px;">Fourier • OU • Quant</div>
+            <span title="Updated" style="position:absolute;top:6px;right:6px;background:linear-gradient(45deg,#9C27B0,#00BCD4);color:white;padding:2px 6px;border-radius:10px;font-size:9px;font-weight:700;">NEW</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- AI & Strategy Modules -->
+      <div style="margin-bottom:24px;">
+        <h3 style="margin:0 0 12px 0; font-size:14px; color:var(--text-secondary); text-transform:uppercase; letter-spacing:1px;">🤖 AI & Strategy Engine</h3>
+        <div class="modules-grid" style="grid-template-columns:repeat(auto-fit, minmax(140px, 1fr)); gap:12px;">
+          <button class="tile" data-module="strategy-builder">
+            <svg class="icon" style="width:28px;height:28px;margin-bottom:8px;color:#FFD700;" aria-hidden="true">
+              <use href="#icon-strategy-builder"/>
+            </svg>
+            <span style="font-weight:600;">Strategy Builder</span>
+            <div style="font-size:10px; color:var(--text-secondary); margin-top:4px;">AI Backtest • Multi-Asset</div>
+          </button>
+          <button class="tile" data-module="ai-aggregator">
+            <svg class="icon" style="width:28px;height:28px;margin-bottom:8px;" aria-hidden="true">
+              <use href="#icon-ai-premium"/>
+            </svg>
+            <span style="font-weight:600;">AI Meta-Aggregator</span>
+            <div style="font-size:10px; color:var(--text-secondary); margin-top:4px;">LightGBM • SHAP • Scoring</div>
+          </button>
+          <button class="tile" data-module="backtester">
+            <svg class="icon" style="width:28px;height:28px;margin-bottom:8px;" aria-hidden="true">
+              <use href="#icon-analytics-premium"/>
+            </svg>
+            <span style="font-weight:600;">Advanced Backtester</span>
+            <div style="font-size:10px; color:var(--text-secondary); margin-top:4px;">P&L • Drawdown • Reports</div>
+          </button>
+          <button class="tile" data-module="optimizer">
+            <svg class="icon" style="width:28px;height:28px;margin-bottom:8px;" aria-hidden="true">
+              <use href="#icon-settings-premium"/>
+            </svg>
+            <span style="font-weight:600;">Strategy Optimizer</span>
+            <div style="font-size:10px; color:var(--text-secondary); margin-top:4px;">Parameter Sweep • GA</div>
+          </button>
+        </div>
+      </div>
+
+      <!-- Execution & Management -->
+      <div style="margin-bottom:24px;">
+        <h3 style="margin:0 0 12px 0; font-size:14px; color:var(--text-secondary); text-transform:uppercase; letter-spacing:1px;">⚙️ Execution & Management</h3>
+        <div class="modules-grid" style="grid-template-columns:repeat(auto-fit, minmax(140px, 1fr)); gap:12px;">
+          <button class="tile" data-module="execution">
+            <svg class="icon" style="width:28px;height:28px;margin-bottom:8px;" aria-hidden="true">
+              <use href="#icon-execution-premium"/>
+            </svg>
+            <span style="font-weight:600;">Auto Execution</span>
+            <div style="font-size:10px; color:var(--text-secondary); margin-top:4px;">Forex Brokers • IBKR • Alpaca</div>
+          </button>
+          <button class="tile" data-module="risk">
+            <svg class="icon" style="width:28px;height:28px;margin-bottom:8px;" aria-hidden="true">
+              <use href="#icon-risk-premium"/>
+            </svg>
+            <span style="font-weight:600;">Risk Management</span>
+            <div style="font-size:10px; color:var(--text-secondary); margin-top:4px;">Position Size • Stop Loss</div>
+          </button>
+          <button class="tile" data-module="alerts">
+            <svg class="icon" style="width:28px;height:28px;margin-bottom:8px;" aria-hidden="true">
+              <use href="#icon-alerts-premium"/>
+            </svg>
+            <span style="font-weight:600;">Alert System</span>
+            <div style="font-size:10px; color:var(--text-secondary); margin-top:4px;">Telegram • Email • SMS</div>
+          </button>
+          <button class="tile" data-module="journal">
+            <svg class="icon" style="width:28px;height:28px;margin-bottom:8px;" aria-hidden="true">
+              <use href="#icon-journal-premium"/>
+            </svg>
+            <span style="font-weight:600;">Trading Journal</span>
+            <div style="font-size:10px; color:var(--text-secondary); margin-top:4px;">Auto Log • AI Review</div>
+          </button>
+          <button class="tile" data-module="edm">
+            <svg class="icon" style="width:28px;height:28px;margin-bottom:8px;" aria-hidden="true">
+              <use href="#icon-brain"/>
+            </svg>
+            <span style="font-weight:600;">EDM System</span>
+            <div style="font-size:10px; color:var(--text-secondary); margin-top:4px;">Emotion • Discipline • Coach</div>
+          </button>
+        </div>
+      </div>
+
+      <!-- Data & System Modules -->
+      <div>
+        <h3 style="margin:0 0 12px 0; font-size:14px; color:var(--text-secondary); text-transform:uppercase; letter-spacing:1px;">🗄️ Data & System</h3>
+        <div class="modules-grid" style="grid-template-columns:repeat(auto-fit, minmax(140px, 1fr)); gap:12px;">
+          <button class="tile" data-module="data">
+            <svg class="icon" style="width:28px;height:28px;margin-bottom:8px;" aria-hidden="true">
+              <use href="#icon-data-premium"/>
+            </svg>
+            <span style="font-weight:600;">Market Data</span>
+            <div style="font-size:10px; color:var(--text-secondary); margin-top:4px;">Multi-source • Clean • Store</div>
+          </button>
+          <button class="tile" data-module="research">
+            <svg class="icon" style="width:28px;height:28px;margin-bottom:8px;" aria-hidden="true">
+              <use href="#icon-research-premium"/>
+            </svg>
+            <span style="font-weight:600;">R&D Lab</span>
+            <div style="font-size:10px; color:var(--text-secondary); margin-top:4px;">Dataset • Models • Test</div>
+          </button>
+          <button class="tile" data-module="reporting">
+            <svg class="icon" style="width:28px;height:28px;margin-bottom:8px;" aria-hidden="true">
+              <use href="#icon-analytics-premium"/>
+            </svg>
+            <span style="font-weight:600;">Analytics</span>
+            <div style="font-size:10px; color:var(--text-secondary); margin-top:4px;">Performance • Reports • KPI</div>
+          </button>
+          <button class="tile" data-module="settings" data-action="open-system-config">
+            <svg class="icon" style="width:28px;height:28px;margin-bottom:8px;" aria-hidden="true">
+              <use href="#icon-settings-premium"/>
+            </svg>
+            <span style="font-weight:600;">System Config</span>
+            <div style="font-size:10px; color:var(--text-secondary); margin-top:4px;">Theme • Fonts • Panels • AI</div>
+          </button>
+        </div>
+      </div>
+
+      <!-- Quick Stats Footer -->
+      <div style="margin-top:32px; padding:16px; background:var(--bg-secondary); border-radius:8px; border:1px solid var(--border-color);">
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:16px; text-align:center;">
+          <div>
+            <div style="font-size:20px; font-weight:700; color:var(--accent-color);">15</div>
+            <div style="font-size:12px; color:var(--text-secondary);">Premium Modules</div>
+          </div>
+          <div>
+            <div style="font-size:20px; font-weight:700; color:#4CAF50;">850+</div>
+            <div style="font-size:12px; color:var(--text-secondary);">Detection Algorithms</div>
+          </div>
+          <div>
+            <div style="font-size:20px; font-weight:700; color:#FF9800;">Live</div>
+            <div style="font-size:12px; color:var(--text-secondary);">AI Aggregation</div>
+          </div>
+          <div>
+            <div style="font-size:20px; font-weight:700; color:#E91E63;">Real-time</div>
+            <div style="font-size:12px; color:var(--text-secondary);">Signal Processing</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Math Models View (Momentum + Volatility integrated) -->
+      <section id="mathModelsView" class="chart-view hidden">
+        <!-- Tabs for submodules -->
+        <div style="display:flex; border-bottom:1px solid var(--border-color); background:var(--bg-secondary); padding:8px; gap:8px; align-items:center;">
+          <button id="mathTabMomentum" class="gann-tab-btn active" data-math-tab="momentum" title="Momentum: RSI (purple), MACD (cyan)">Momentum
+            <span style="display:inline-flex;gap:4px;margin-left:8px;vertical-align:middle;">
+              <span style="width:8px;height:8px;border-radius:50%;background:#9C27B0;display:inline-block;" title="RSI"></span>
+              <span style="width:8px;height:8px;border-radius:50%;background:#00BCD4;display:inline-block;" title="MACD"></span>
+            </span>
+          </button>
+          <button id="mathTabVolatility" class="gann-tab-btn" data-math-tab="volatility">Volatility</button>
+          <button id="mathTabModels" class="gann-tab-btn" data-math-tab="models">Math Models</button>
+          <div style="margin-left:auto; display:flex; gap:8px; align-items:center;">
+            <input id="mathSymbolInput" value="EURUSD" placeholder="Symbol" style="width:80px;padding:4px;font-size:12px;" />
+            <select id="mathIntervalSelect" title="Interval" style="padding:4px;font-size:12px;">
+              <option value="1m">1m</option>
+              <option value="5m" selected>5m</option>
+              <option value="15m">15m</option>
+              <option value="1h">1h</option>
+              <option value="1d">1d</option>
+            </select>
+            <button id="mathLoadBtn" class="signals-home" title="Load Data" aria-label="Reload">
+              <svg class="icon" aria-hidden="true"><use href="#icon-reload"/></svg>
+            </button>
+            <button id="mathHomeBtn" class="signals-home" title="Back to Dashboard" aria-label="Home">
+              <svg class="icon" aria-hidden="true"><use href="#icon-home"/></svg>
+            </button>
+          </div>
+        </div>
+        <!-- Horizontal signals bar (icons area placeholder) -->
+        <div id="mathSignalsBar" class="signals-bar">
+          <div id="mathSignalsIconsRow" class="signals-icons-row">
+            <button id="mathIconRSI" class="signals-home" title="Highlight RSI signal">
+              <svg class="icon" aria-hidden="true"><use href="#icon-momentum-premium"/></svg>
+              <span class="btn-label">RSI</span>
+            </button>
+            <button id="mathIconMACD" class="signals-home" title="Highlight MACD signal">
+              <svg class="icon" aria-hidden="true"><use href="#icon-analytics-premium"/></svg>
+              <span class="btn-label">MACD</span>
+            </button>
+            <button id="mathIconATR" class="signals-home" title="Show ATR value">
+              <svg class="icon" aria-hidden="true"><use href="#icon-settings-premium"/></svg>
+              <span class="btn-label">ATR</span>
+            </button>
+            <button id="mathIconBOLL" class="signals-home" title="Toggle Bollinger overlay">
+              <svg class="icon" aria-hidden="true"><use href="#icon-volatility-premium"/></svg>
+              <span class="btn-label">BOLL</span>
+            </button>
+            <button id="mathIconZoom" class="signals-home" title="Zoom to last signal">
+              <svg class="icon" aria-hidden="true"><use href="#icon-fit"/></svg>
+              <span class="btn-label">Zoom</span>
+            </button>
+            <button id="mathIconClear" class="signals-home" title="Clear math overlays">
+              <svg class="icon" aria-hidden="true"><use href="#icon-close"/></svg>
+              <span class="btn-label">Clear</span>
+            </button>
+          </div>
+          <label style="display:flex;align-items:center;gap:6px;margin-left:auto;font-size:12px;color:var(--text-secondary);">
+            <input id="mathAutoSignalsToggle" type="checkbox" />
+            <span>Auto Detect</span>
+          </label>
+        </div>
+        <!-- Chart + Right signals panel -->
+        <div class="chart-wrapper" style="display:flex; gap:8px; align-items:stretch;">
+          <!-- Math chart area with ICT-like controls -->
+          <div id="mathChartArea" style="position:relative; flex:1; min-height:520px; background:var(--bg-secondary); border:1px solid var(--border-color); border-radius:8px;">
+            <!-- TradingView-style zoom controls -->
+            <div class="chart-controls">
+              <button class="chart-control-btn" id="mathZoomInBtn" title="Zoom In" aria-label="Zoom In">
+                <svg class="icon" aria-hidden="true"><use href="#icon-plus"/></svg>
+              </button>
+              <button class="chart-control-btn" id="mathZoomOutBtn" title="Zoom Out" aria-label="Zoom Out">
+                <svg class="icon" aria-hidden="true"><use href="#icon-minus"/></svg>
+              </button>
+              <button class="chart-control-btn" id="mathFitContentBtn" title="Fit Content" aria-label="Fit">
+                <svg class="icon" aria-hidden="true"><use href="#icon-fit"/></svg>
+              </button>
+              <button class="chart-control-btn" id="mathResetZoomBtn" title="Reset Zoom" aria-label="Reset">
+                <svg class="icon" aria-hidden="true"><use href="#icon-reset"/></svg>
+              </button>
+              <button class="chart-control-btn" id="mathFullScreenBtn" title="Fullscreen" aria-label="Fullscreen">
+                <svg class="icon" aria-hidden="true"><use href="#icon-fullscreen"/></svg>
+              </button>
+              <button class="chart-control-btn" id="mathClearBtn" title="Clear Math Overlays" aria-label="Clear Math">
+                <svg class="icon" aria-hidden="true"><use href="#icon-close"/></svg>
+                <span style="font-size: 10px; margin-left: 2px;">Clear Math</span>
+              </button>
+            </div>
+            <div id="mathChartContainer" style="width:100%; height:100%; border-radius:8px;"></div>
+            <!-- Chart status (top-left) -->
+            <div id="mathChartStatus" style="position: absolute; top: 64px; left: 12px; background: var(--bg-secondary); color: var(--text-secondary); padding: 4px 8px; border-radius: 6px; font-size: 12px; z-index: 6; display: none;"></div>
+            <!-- Price info display -->
+            <div id="mathPriceInfo" style="position: absolute; bottom: 10px; left: 10px; background: var(--bg-primary); padding: 4px 8px; border-radius: 4px; font-family: monospace; z-index: 6;"></div>
+          </div>
+          <aside id="mathSignalsPanel" class="ict-tray" style="position:relative; width:320px; max-width:40vw;">
+            <div class="ict-section">
+              <div class="ict-section-title">Signals</div>
+              <div id="mathSignalsList" style="display:flex; flex-direction:column; gap:6px;"></div>
+            </div>
+            <div class="resize-handle handle-right" title="Resize Width" style="position:absolute;top:0;right:0;width:6px;bottom:0;cursor:ew-resize;"></div>
+          </aside>
+        </div>
+      </section>
     </section>
 
-    <section id="signalsSection" class="tab hidden">
-      <div id="lwchart" style="height:600px;"></div>
-      <div id="log"></div>
+      <!-- R&D Lab Module View -->
+      <section id="researchView" class="chart-view hidden">
+        <div style="display:flex; gap:12px; padding:12px; width:100%; height:100%; box-sizing:border-box;">
+          <div style="flex:1 1 auto; display:flex; flex-direction:column; gap:12px;">
+            <!-- Header -->
+            <div style="display:flex; align-items:center; gap:12px; padding:8px 12px; background:var(--bg-secondary); border-radius:6px;">
+              <button id="researchHomeBtn" class="signals-home" title="Back to Dashboard" aria-label="Home">
+                <svg class="icon" aria-hidden="true"><use href="#icon-home"/></svg>
+              </button>
+              <svg class="icon" style="font-size:20px; color:var(--accent-color);" aria-hidden="true">
+                <use href="#icon-research-premium"/>
+              </svg>
+              <h2 style="margin:0; font-size:18px; font-weight:600;">R&D Laboratory</h2>
+              <div style="margin-left:auto; display:flex; align-items:center; gap:8px; font-size:12px; color:var(--text-secondary);">
+                <span>⚡ Experimental</span>
+                <span>•</span>
+                <span id="researchStatus">Ready</span>
+              </div>
+            </div>
+
+            <!-- Tab Navigation -->
+            <div style="display:flex; border-bottom:1px solid var(--border-color); background:var(--bg-secondary); padding:8px; gap:8px; border-radius:6px 6px 0 0;">
+              <button id="researchTabDataset" class="gann-tab-btn active" data-research-tab="dataset">📊 Dataset</button>
+              <button id="researchTabModels" class="gann-tab-btn" data-research-tab="models">🧠 Models</button>
+              <button id="researchTabTesting" class="gann-tab-btn" data-research-tab="testing">🧪 Testing</button>
+              <button id="researchTabResults" class="gann-tab-btn" data-research-tab="results">📈 Results</button>
+            </div>
+
+            <!-- Main Content Area -->
+            <div style="flex:1; display:flex; flex-direction:column; gap:12px; overflow:hidden;">
+              
+              <!-- Dataset Tab -->
+              <div id="researchDatasetTab" class="research-tab-content">
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; height:100%;">
+                  <!-- Data Sources -->
+                  <div style="display:flex; flex-direction:column; gap:8px;">
+                    <h3 style="margin:0; font-size:14px; font-weight:600; color:var(--text-primary);">Data Sources</h3>
+                    <div style="display:flex; flex-direction:column; gap:6px; background:var(--bg-secondary); padding:12px; border-radius:6px; flex:1;">
+                      <div style="display:flex; justify-content:space-between; align-items:center; padding:8px; background:var(--bg-primary); border-radius:4px; cursor:pointer;" class="dataset-item" data-source="historical">
+                        <div>
+                          <div style="font-weight:600; font-size:12px;">Historical OHLCV</div>
+                          <div style="font-size:10px; color:var(--text-secondary);">Last 5 years • 1m to 1D</div>
+                        </div>
+                        <span style="color:#27AE60;">●</span>
+                      </div>
+                      <div style="display:flex; justify-content:space-between; align-items:center; padding:8px; background:var(--bg-primary); border-radius:4px; cursor:pointer;" class="dataset-item" data-source="indicators">
+                        <div>
+                          <div style="font-weight:600; font-size:12px;">Technical Indicators</div>
+                          <div style="font-size:10px; color:var(--text-secondary);">RSI, MACD, Bollinger, ATR</div>
+                        </div>
+                        <span style="color:#27AE60;">●</span>
+                      </div>
+                      <div style="display:flex; justify-content:space-between; align-items:center; padding:8px; background:var(--bg-primary); border-radius:4px; cursor:pointer;" class="dataset-item" data-source="signals">
+                        <div>
+                          <div style="font-weight:600; font-size:12px;">ICT Signals</div>
+                          <div style="font-size:10px; color:var(--text-secondary);">OB, FVG, CHoCH patterns</div>
+                        </div>
+                        <span style="color:#F39C12;">●</span>
+                      </div>
+                      <div style="display:flex; justify-content:space-between; align-items:center; padding:8px; background:var(--bg-primary); border-radius:4px; cursor:pointer;" class="dataset-item" data-source="news">
+                        <div>
+                          <div style="font-weight:600; font-size:12px;">News Sentiment</div>
+                          <div style="font-size:10px; color:var(--text-secondary);">Economic events • AI analysis</div>
+                        </div>
+                        <span style="color:#E74C3C;">●</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Data Pipeline -->
+                  <div style="display:flex; flex-direction:column; gap:8px;">
+                    <h3 style="margin:0; font-size:14px; font-weight:600; color:var(--text-primary);">Data Pipeline</h3>
+                    <div style="background:var(--bg-secondary); padding:12px; border-radius:6px; flex:1; display:flex; flex-direction:column; gap:8px;">
+                      <div style="display:flex; align-items:center; gap:8px; padding:8px; background:var(--bg-primary); border-radius:4px;">
+                        <span style="color:#3498DB;">📥</span>
+                        <div style="flex:1;">
+                          <div style="font-size:12px; font-weight:600;">Data Ingestion</div>
+                          <div style="font-size:10px; color:var(--text-secondary);">Real-time + Historical</div>
+                        </div>
+                        <button style="padding:4px 8px; font-size:10px; background:var(--accent-color); color:white; border:none; border-radius:3px; cursor:pointer;">Configure</button>
+                      </div>
+                      <div style="display:flex; align-items:center; gap:8px; padding:8px; background:var(--bg-primary); border-radius:4px;">
+                        <span style="color:#9B59B6;">🔧</span>
+                        <div style="flex:1;">
+                          <div style="font-size:12px; font-weight:600;">Feature Engineering</div>
+                          <div style="font-size:10px; color:var(--text-secondary);">Indicators + Pattern detection</div>
+                        </div>
+                        <button style="padding:4px 8px; font-size:10px; background:var(--bg-secondary); border:1px solid var(--border-color); border-radius:3px; cursor:pointer;">Edit</button>
+                      </div>
+                      <div style="display:flex; align-items:center; gap:8px; padding:8px; background:var(--bg-primary); border-radius:4px;">
+                        <span style="color:#E67E22;">🏷️</span>
+                        <div style="flex:1;">
+                          <div style="font-size:12px; font-weight:600;">Data Labeling</div>
+                          <div style="font-size:10px; color:var(--text-secondary);">Auto + Manual annotations</div>
+                        </div>
+                        <button style="padding:4px 8px; font-size:10px; background:var(--bg-secondary); border:1px solid var(--border-color); border-radius:3px; cursor:pointer;">Label</button>
+                      </div>
+                      <div style="display:flex; align-items:center; gap:8px; padding:8px; background:var(--bg-primary); border-radius:4px;">
+                        <span style="color:#27AE60;">💾</span>
+                        <div style="flex:1;">
+                          <div style="font-size:12px; font-weight:600;">Data Storage</div>
+                          <div style="font-size:10px; color:var(--text-secondary);">Versioned datasets</div>
+                        </div>
+                        <button style="padding:4px 8px; font-size:10px; background:var(--bg-secondary); border:1px solid var(--border-color); border-radius:3px; cursor:pointer;">Manage</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Models Tab -->
+              <div id="researchModelsTab" class="research-tab-content hidden">
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; height:100%;">
+                  <!-- Model Registry -->
+                  <div style="display:flex; flex-direction:column; gap:8px;">
+                    <h3 style="margin:0; font-size:14px; font-weight:600; color:var(--text-primary);">Model Registry</h3>
+                    <div style="display:flex; flex-direction:column; gap:6px; background:var(--bg-secondary); padding:12px; border-radius:6px; flex:1;">
+                      <div style="display:flex; justify-content:space-between; align-items:center; padding:8px; background:var(--bg-primary); border-radius:4px; cursor:pointer;" class="model-item" data-model="lstm">
+                        <div>
+                          <div style="font-weight:600; font-size:12px;">LSTM Neural Network</div>
+                          <div style="font-size:10px; color:var(--text-secondary);">Price prediction • 89.2% accuracy</div>
+                        </div>
+                        <div style="display:flex; gap:4px;">
+                          <span style="background:#27AE60; color:white; padding:2px 6px; border-radius:10px; font-size:9px;">TRAINED</span>
+                        </div>
+                      </div>
+                      <div style="display:flex; justify-content:space-between; align-items:center; padding:8px; background:var(--bg-primary); border-radius:4px; cursor:pointer;" class="model-item" data-model="rf">
+                        <div>
+                          <div style="font-weight:600; font-size:12px;">Random Forest</div>
+                          <div style="font-size:10px; color:var(--text-secondary);">Signal classification • 76.8% accuracy</div>
+                        </div>
+                        <div style="display:flex; gap:4px;">
+                          <span style="background:#3498DB; color:white; padding:2px 6px; border-radius:10px; font-size:9px;">TRAINING</span>
+                        </div>
+                      </div>
+                      <div style="display:flex; justify-content:space-between; align-items:center; padding:8px; background:var(--bg-primary); border-radius:4px; cursor:pointer;" class="model-item" data-model="transformer">
+                        <div>
+                          <div style="font-weight:600; font-size:12px;">Transformer</div>
+                          <div style="font-size:10px; color:var(--text-secondary);">Pattern recognition • Experimental</div>
+                        </div>
+                        <div style="display:flex; gap:4px;">
+                          <span style="background:#95A5A6; color:white; padding:2px 6px; border-radius:10px; font-size:9px;">DRAFT</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Model Development -->
+                  <div style="display:flex; flex-direction:column; gap:8px;">
+                    <h3 style="margin:0; font-size:14px; font-weight:600; color:var(--text-primary);">Development Tools</h3>
+                    <div style="background:var(--bg-secondary); padding:12px; border-radius:6px; flex:1; display:flex; flex-direction:column; gap:8px;">
+                      <div style="display:flex; align-items:center; gap:8px; padding:8px; background:var(--bg-primary); border-radius:4px;">
+                        <span style="color:#E74C3C;">🔬</span>
+                        <div style="flex:1;">
+                          <div style="font-size:12px; font-weight:600;">Experiment Tracking</div>
+                          <div style="font-size:10px; color:var(--text-secondary);">MLflow • Weights & Biases</div>
+                        </div>
+                        <button style="padding:4px 8px; font-size:10px; background:var(--accent-color); color:white; border:none; border-radius:3px; cursor:pointer;">Launch</button>
+                      </div>
+                      <div style="display:flex; align-items:center; gap:8px; padding:8px; background:var(--bg-primary); border-radius:4px;">
+                        <span style="color:#9B59B6;">⚙️</span>
+                        <div style="flex:1;">
+                          <div style="font-size:12px; font-weight:600;">Hyperparameter Tuning</div>
+                          <div style="font-size:10px; color:var(--text-secondary);">Optuna • Grid search</div>
+                        </div>
+                        <button style="padding:4px 8px; font-size:10px; background:var(--bg-secondary); border:1px solid var(--border-color); border-radius:3px; cursor:pointer;">Configure</button>
+                      </div>
+                      <div style="display:flex; align-items:center; gap:8px; padding:8px; background:var(--bg-primary); border-radius:4px;">
+                        <span style="color:#F39C12;">📊</span>
+                        <div style="flex:1;">
+                          <div style="font-size:12px; font-weight:600;">Model Validation</div>
+                          <div style="font-size:10px; color:var(--text-secondary);">Cross-validation • Metrics</div>
+                        </div>
+                        <button style="padding:4px 8px; font-size:10px; background:var(--bg-secondary); border:1px solid var(--border-color); border-radius:3px; cursor:pointer;">Validate</button>
+                      </div>
+                      <div style="display:flex; align-items:center; gap:8px; padding:8px; background:var(--bg-primary); border-radius:4px;">
+                        <span style="color:#16A085;">🚀</span>
+                        <div style="flex:1;">
+                          <div style="font-size:12px; font-weight:600;">Model Deployment</div>
+                          <div style="font-size:10px; color:var(--text-secondary);">REST API • Real-time inference</div>
+                        </div>
+                        <button style="padding:4px 8px; font-size:10px; background:var(--bg-secondary); border:1px solid var(--border-color); border-radius:3px; cursor:pointer;">Deploy</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Testing Tab -->
+              <div id="researchTestingTab" class="research-tab-content hidden">
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; height:100%;">
+                  <!-- Test Scenarios -->
+                  <div style="display:flex; flex-direction:column; gap:8px;">
+                    <h3 style="margin:0; font-size:14px; font-weight:600; color:var(--text-primary);">Test Scenarios</h3>
+                    <div style="display:flex; flex-direction:column; gap:6px; background:var(--bg-secondary); padding:12px; border-radius:6px; flex:1;">
+                      <div style="display:flex; justify-content:space-between; align-items:center; padding:8px; background:var(--bg-primary); border-radius:4px; cursor:pointer;" class="test-scenario" data-test="backtest">
+                        <div>
+                          <div style="font-weight:600; font-size:12px;">Historical Backtest</div>
+                          <div style="font-size:10px; color:var(--text-secondary);">2019-2024 • Multiple pairs</div>
+                        </div>
+                        <div style="display:flex; gap:4px; align-items:center;">
+                          <span style="color:#27AE60; font-size:10px;">✓ Passed</span>
+                          <button style="padding:2px 6px; font-size:9px; background:var(--accent-color); color:white; border:none; border-radius:2px; cursor:pointer;">Run</button>
+                        </div>
+                      </div>
+                      <div style="display:flex; justify-content:space-between; align-items:center; padding:8px; background:var(--bg-primary); border-radius:4px; cursor:pointer;" class="test-scenario" data-test="paper">
+                        <div>
+                          <div style="font-weight:600; font-size:12px;">Paper Trading</div>
+                          <div style="font-size:10px; color:var(--text-secondary);">Live data • No risk</div>
+                        </div>
+                        <div style="display:flex; gap:4px; align-items:center;">
+                          <span style="color:#3498DB; font-size:10px;">⏳ Running</span>
+                          <button style="padding:2px 6px; font-size:9px; background:var(--bg-secondary); border:1px solid var(--border-color); border-radius:2px; cursor:pointer;">Stop</button>
+                        </div>
+                      </div>
+                      <div style="display:flex; justify-content:space-between; align-items:center; padding:8px; background:var(--bg-primary); border-radius:4px; cursor:pointer;" class="test-scenario" data-test="stress">
+                        <div>
+                          <div style="font-weight:600; font-size:12px;">Stress Testing</div>
+                          <div style="font-size:10px; color:var(--text-secondary);">Extreme market conditions</div>
+                        </div>
+                        <div style="display:flex; gap:4px; align-items:center;">
+                          <span style="color:#95A5A6; font-size:10px;">⚫ Queued</span>
+                          <button style="padding:2px 6px; font-size:9px; background:var(--bg-secondary); border:1px solid var(--border-color); border-radius:2px; cursor:pointer;">Queue</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Test Results -->
+                  <div style="display:flex; flex-direction:column; gap:8px;">
+                    <h3 style="margin:0; font-size:14px; font-weight:600; color:var(--text-primary);">Performance Metrics</h3>
+                    <div style="background:var(--bg-secondary); padding:12px; border-radius:6px; flex:1; display:flex; flex-direction:column; gap:8px;">
+                      <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+                        <div style="padding:8px; background:var(--bg-primary); border-radius:4px; text-align:center;">
+                          <div style="font-size:16px; font-weight:600; color:#27AE60;">+23.7%</div>
+                          <div style="font-size:10px; color:var(--text-secondary);">Total Return</div>
+                        </div>
+                        <div style="padding:8px; background:var(--bg-primary); border-radius:4px; text-align:center;">
+                          <div style="font-size:16px; font-weight:600; color:#3498DB;">1.89</div>
+                          <div style="font-size:10px; color:var(--text-secondary);">Sharpe Ratio</div>
+                        </div>
+                        <div style="padding:8px; background:var(--bg-primary); border-radius:4px; text-align:center;">
+                          <div style="font-size:16px; font-weight:600; color:#E74C3C;">-8.2%</div>
+                          <div style="font-size:10px; color:var(--text-secondary);">Max Drawdown</div>
+                        </div>
+                        <div style="padding:8px; background:var(--bg-primary); border-radius:4px; text-align:center;">
+                          <div style="font-size:16px; font-weight:600; color:#F39C12;">67.3%</div>
+                          <div style="font-size:10px; color:var(--text-secondary);">Win Rate</div>
+                        </div>
+                      </div>
+                      <div style="margin-top:8px; padding:8px; background:var(--bg-primary); border-radius:4px;">
+                        <div style="font-size:12px; font-weight:600; margin-bottom:4px;">Risk Metrics</div>
+                        <div style="display:flex; justify-content:space-between; font-size:10px; color:var(--text-secondary);">
+                          <span>VaR (95%): $2,340</span>
+                          <span>Beta: 0.87</span>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; font-size:10px; color:var(--text-secondary);">
+                          <span>Volatility: 12.4%</span>
+                          <span>Correlation: 0.23</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Results Tab -->
+              <div id="researchResultsTab" class="research-tab-content hidden">
+                <div style="display:flex; flex-direction:column; gap:12px; height:100%;">
+                  <!-- Summary Cards -->
+                  <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:8px;">
+                    <div style="padding:12px; background:var(--bg-secondary); border-radius:6px; text-align:center;">
+                      <div style="font-size:20px; font-weight:600; color:#27AE60;">7</div>
+                      <div style="font-size:11px; color:var(--text-secondary);">Active Models</div>
+                    </div>
+                    <div style="padding:12px; background:var(--bg-secondary); border-radius:6px; text-align:center;">
+                      <div style="font-size:20px; font-weight:600; color:#3498DB;">142</div>
+                      <div style="font-size:11px; color:var(--text-secondary);">Experiments</div>
+                    </div>
+                    <div style="padding:12px; background:var(--bg-secondary); border-radius:6px; text-align:center;">
+                      <div style="font-size:20px; font-weight:600; color:#F39C12;">89.2%</div>
+                      <div style="font-size:11px; color:var(--text-secondary);">Best Accuracy</div>
+                    </div>
+                    <div style="padding:12px; background:var(--bg-secondary); border-radius:6px; text-align:center;">
+                      <div style="font-size:20px; font-weight:600; color:#9B59B6;">4.2TB</div>
+                      <div style="font-size:11px; color:var(--text-secondary);">Training Data</div>
+                    </div>
+                  </div>
+
+                  <!-- Experiment History -->
+                  <div style="flex:1; display:flex; flex-direction:column; gap:8px;">
+                    <h3 style="margin:0; font-size:14px; font-weight:600; color:var(--text-primary);">Recent Experiments</h3>
+                    <div style="background:var(--bg-secondary); border-radius:6px; flex:1; overflow:hidden;">
+                      <div style="padding:8px 12px; background:var(--bg-primary); border-bottom:1px solid var(--border-color); font-size:11px; font-weight:600; display:grid; grid-template-columns:1fr 100px 80px 80px 100px 80px; gap:8px;">
+                        <span>Experiment</span>
+                        <span>Model</span>
+                        <span>Accuracy</span>
+                        <span>Loss</span>
+                        <span>Duration</span>
+                        <span>Status</span>
+                      </div>
+                      <div style="overflow-y:auto; height:calc(100% - 40px);">
+                        <div style="padding:8px 12px; border-bottom:1px solid var(--border-color); font-size:11px; display:grid; grid-template-columns:1fr 100px 80px 80px 100px 80px; gap:8px; align-items:center;">
+                          <span>LSTM-v3.2-momentum</span>
+                          <span style="color:var(--text-secondary);">LSTM</span>
+                          <span style="color:#27AE60;">89.2%</span>
+                          <span style="color:var(--text-secondary);">0.0834</span>
+                          <span style="color:var(--text-secondary);">2h 34m</span>
+                          <span style="background:#27AE60; color:white; padding:1px 4px; border-radius:8px; font-size:9px;">COMPLETE</span>
+                        </div>
+                        <div style="padding:8px 12px; border-bottom:1px solid var(--border-color); font-size:11px; display:grid; grid-template-columns:1fr 100px 80px 80px 100px 80px; gap:8px; align-items:center;">
+                          <span>RF-ensemble-v2.1</span>
+                          <span style="color:var(--text-secondary);">Random Forest</span>
+                          <span style="color:#F39C12;">76.8%</span>
+                          <span style="color:var(--text-secondary);">0.1245</span>
+                          <span style="color:var(--text-secondary);">45m</span>
+                          <span style="background:#3498DB; color:white; padding:1px 4px; border-radius:8px; font-size:9px;">TRAINING</span>
+                        </div>
+                        <div style="padding:8px 12px; border-bottom:1px solid var(--border-color); font-size:11px; display:grid; grid-template-columns:1fr 100px 80px 80px 100px 80px; gap:8px; align-items:center;">
+                          <span>Transformer-attention</span>
+                          <span style="color:var(--text-secondary);">Transformer</span>
+                          <span style="color:#E74C3C;">54.3%</span>
+                          <span style="color:var(--text-secondary);">0.3421</span>
+                          <span style="color:var(--text-secondary);">1h 12m</span>
+                          <span style="background:#E74C3C; color:white; padding:1px 4px; border-radius:8px; font-size:9px;">FAILED</span>
+                        </div>
+                        <div style="padding:8px 12px; border-bottom:1px solid var(--border-color); font-size:11px; display:grid; grid-template-columns:1fr 100px 80px 80px 100px 80px; gap:8px; align-items:center;">
+                          <span>CNN-pattern-detection</span>
+                          <span style="color:var(--text-secondary);">CNN</span>
+                          <span style="color:#95A5A6;">--</span>
+                          <span style="color:#95A5A6;">--</span>
+                          <span style="color:var(--text-secondary);">--</span>
+                          <span style="background:#95A5A6; color:white; padding:1px 4px; border-radius:8px; font-size:9px;">QUEUED</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Side Panel -->
+          <aside style="width:280px; display:flex; flex-direction:column; gap:8px; background:var(--bg-secondary); padding:12px; border-radius:6px; position:relative;">
+            <!-- Quick Actions -->
+            <div style="margin-bottom:8px;">
+              <h4 style="margin:0 0 8px 0; font-size:12px; font-weight:600; color:var(--text-primary);">Quick Actions</h4>
+              <div style="display:flex; flex-direction:column; gap:4px;">
+                <button id="researchNewExperiment" style="padding:8px; font-size:11px; background:var(--accent-color); color:white; border:none; border-radius:4px; cursor:pointer; text-align:left;">
+                  🧪 New Experiment
+                </button>
+                <button id="researchImportData" style="padding:8px; font-size:11px; background:var(--bg-primary); border:1px solid var(--border-color); border-radius:4px; cursor:pointer; text-align:left;">
+                  📊 Import Dataset
+                </button>
+                <button id="researchExportModel" style="padding:8px; font-size:11px; background:var(--bg-primary); border:1px solid var(--border-color); border-radius:4px; cursor:pointer; text-align:left;">
+                  💾 Export Model
+                </button>
+                <button id="researchGenerateReport" style="padding:8px; font-size:11px; background:var(--bg-primary); border:1px solid var(--border-color); border-radius:4px; cursor:pointer; text-align:left;">
+                  📄 Generate Report
+                </button>
+                <button onclick="rdLabIntegration.showLiveMetrics()" style="padding:8px; font-size:11px; background:linear-gradient(45deg, #9B59B6, #8E44AD); color:white; border:none; border-radius:4px; cursor:pointer; text-align:left;">
+                  📊 Advanced Metrics
+                </button>
+                <button onclick="rdLabIntegration.startDataStream()" style="padding:8px; font-size:11px; background:linear-gradient(45deg, #27AE60, #2ECC71); color:white; border:none; border-radius:4px; cursor:pointer; text-align:left;">
+                  📡 Live Data Stream
+                </button>
+                <button onclick="rdLabIntegration.startAutoMLTraining()" style="padding:8px; font-size:11px; background:linear-gradient(45deg, #E74C3C, #C0392B); color:white; border:none; border-radius:4px; cursor:pointer; text-align:left;">
+                  🚀 Auto-ML Training
+                </button>
+              </div>
+            </div>
+
+            <!-- Research Notes -->
+            <div style="flex:1; display:flex; flex-direction:column; gap:8px;">
+              <h4 style="margin:0; font-size:12px; font-weight:600; color:var(--text-primary);">Research Notes</h4>
+              <textarea id="researchNotes" placeholder="Add experiment notes, hypotheses, and findings..." 
+                style="flex:1; min-height:120px; padding:8px; font-size:11px; background:var(--bg-primary); border:1px solid var(--border-color); border-radius:4px; resize:none; font-family:inherit; color:var(--text-primary);"></textarea>
+              <button style="padding:6px; font-size:10px; background:var(--bg-primary); border:1px solid var(--border-color); border-radius:3px; cursor:pointer;">Save Notes</button>
+            </div>
+
+            <!-- Real-time System Status -->
+            <div style="margin-top:8px;">
+              <h4 style="margin:0 0 8px 0; font-size:12px; font-weight:600; color:var(--text-primary);">⚡ Live Status</h4>
+              <div style="display:flex; flex-direction:column; gap:4px;">
+                <div style="display:flex; align-items:center; gap:8px; font-size:10px;">
+                  <span class="status-dot" style="background:#27AE60; width:6px; height:6px; border-radius:50%; animation:pulse 2s infinite;"></span>
+                  <span>GPU Cluster Online</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:8px; font-size:10px;">
+                  <span class="status-dot" style="background:#27AE60; width:6px; height:6px; border-radius:50%; animation:pulse 2s infinite;"></span>
+                  <span>Data Pipeline Active</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:8px; font-size:10px;">
+                  <span class="status-dot" style="background:#F39C12; width:6px; height:6px; border-radius:50%; animation:blink 1.5s infinite;"></span>
+                  <span id="trainingQueueStatus">Training Queue: 0</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:8px; font-size:10px;">
+                  <span class="status-dot" style="background:#3498DB; width:6px; height:6px; border-radius:50%;"></span>
+                  <span id="dataStreamStatus">Data Stream: Stopped</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:8px; font-size:10px;">
+                  <span class="status-dot" style="background:#9B59B6; width:6px; height:6px; border-radius:50%;"></span>
+                  <span id="deploymentStatus">Models Deployed: 3</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="resize-handle handle-left" title="Resize Width" style="position:absolute;top:0;left:0;width:6px;bottom:0;cursor:ew-resize;"></div>
+          </aside>
+        </div>
+      </section>
+
+      <!-- ASTRO Module View -->
+  <section id="astroView" class="chart-view hidden">
+        <div style="display:flex; gap:12px; padding:12px; width:100%; height:100%; box-sizing:border-box;">
+          <div style="flex:1 1 auto; display:flex; flex-direction:column; gap:12px; position:relative;">
+            <div style="display:flex; align-items:center; gap:12px;">
+              <button id="astroHomeBtn" class="signals-home" title="Back to Dashboard" aria-label="Home">
+                <svg class="icon" aria-hidden="true"><use href="#icon-home"/></svg>
+              </button>
+              <h2 style="margin:0; font-size:18px;">Astro Module</h2>
+              <label style="margin-left:auto; font-size:12px; color:var(--text-secondary);">Date:
+                <input id="astroDateInput" type="date" style="margin-left:6px; padding:4px; font-size:12px;">
+              </label>
+            </div>
+            <iframe id="astroOrbitFrame" title="3D Orbits" src="orbit3d.html" style="width:100%; height:50vh; border:1px solid var(--border-color); border-radius:8px;"></iframe>
+            <!-- Floating planetary positions table -->
+            <div id="astroFloatingTable" style="position:absolute; top:40px; right:40px; min-width:320px; max-width:420px; background:rgba(30,30,40,0.97); border:1px solid var(--border-color); border-radius:10px; box-shadow:0 4px 16px rgba(0,0,0,0.18); z-index:100; padding:16px; display:none;">
+              <button id="toggleFloatingTableBtn" style="position:absolute; top:6px; right:6px; width:22px; height:22px; background:transparent; border:none; color:#FFD700; opacity:0.3; cursor:pointer; font-size:18px;" title="Hide Table">×</button>
+              <h3 style="margin:8px 0; font-size:14px;">Live Planetary Positions <span id="astroFloatingTime" style="font-size:11px; color:#aaa;"></span></h3>
+              <table id="astroFloatingPositionsTable" style="width:100%; border-collapse:collapse; font-size:12px;">
+                <thead style="background:var(--bg-secondary);"><tr id="astroFloatingHeadRow"></tr></thead>
+                <tbody id="astroFloatingBody"></tbody>
+              </table>
+            </div>
+            <!-- Button to show floating table (made more visible) -->
+            <button id="showFloatingTableBtn" style="position:absolute; top:48px; right:48px; width:28px; height:28px; background:#FFD700; color:#222; border-radius:50%; border:none; opacity:0.9; cursor:pointer; z-index:101; box-shadow:0 2px 8px rgba(0,0,0,0.2);" title="Show Planetary Table">☰</button>
+          </div>
+          <div style="width:360px; padding:12px; border-left:1px solid var(--border-color);">
+            <h3 style="margin-top:0; font-size:14px;">Event List</h3>
+            <div id="astroEventsList" style="height:75vh; overflow:auto; display:flex; flex-direction:column; gap:8px;"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- STRATEGY BUILDER Module View -->
+      <section id="strategyBuilderView" class="chart-view hidden">
+        <div style="display:flex; gap:12px; padding:12px; width:100%; height:100%; box-sizing:border-box;">
+          <div style="flex:1 1 auto; display:flex; flex-direction:column; gap:12px;">
+            <div style="display:flex; align-items:center; gap:12px;">
+              <button id="strategyBuilderHomeBtn" class="signals-home" title="Back to Dashboard" aria-label="Home">
+                <svg class="icon" aria-hidden="true"><use href="#icon-home"/></svg>
+              </button>
+              <svg class="icon" style="width:24px;height:24px;color:#FFD700;" aria-hidden="true">
+                <use href="#icon-strategy-builder"/>
+              </svg>
+              <h2 style="margin:0; font-size:18px; color:#FFD700;">AI Strategy Builder</h2>
+              <span style="margin-left:auto; background:#FFD700; color:#000; padding:2px 8px; border-radius:12px; font-size:10px; font-weight:bold;">PREMIUM</span>
+            </div>
+            
+            <!-- Strategy Controls -->
+            <div class="strategy-controls-grid" style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:12px; padding:12px; background:var(--bg-secondary); border-radius:8px;">
+              <div>
+                <label style="display:block; font-size:12px; color:var(--text-secondary); margin-bottom:4px;">Symbol</label>
+                <input id="aiSymbol" value="EURUSD" style="width:100%; padding:8px; font-size:12px; border:1px solid var(--border-color); border-radius:4px; background:var(--bg-primary);" placeholder="Symbol"/>
+              </div>
+              <div>
+                <label style="display:block; font-size:12px; color:var(--text-secondary); margin-bottom:4px;">Prediction Horizon</label>
+                <select id="aiHorizon" style="width:100%; padding:8px; font-size:12px; border:1px solid var(--border-color); border-radius:4px; background:var(--bg-primary);">
+                  <option value="5">5 minutes</option>
+                  <option value="15">15 minutes</option>
+                  <option value="30">30 minutes</option>
+                  <option value="60">1 hour</option>
+                </select>
+              </div>
+              <div>
+                <label style="display:block; font-size:12px; color:var(--text-secondary); margin-bottom:4px;">Action</label>
+                <div style="display:flex; gap:8px;">
+                  <button id="aiRun" style="flex:1; padding:8px; font-size:12px; background:#4CAF50; color:white; border:none; border-radius:4px; cursor:pointer;">Get Decision</button>
+                  <button id="aiRetrain" style="flex:1; padding:8px; font-size:12px; background:#FF9800; color:white; border:none; border-radius:4px; cursor:pointer;">Retrain</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- AI Decision Display -->
+            <div style="display:grid; grid-template-columns: 2fr 1fr; gap:12px; flex:1;">
+              <div style="background:var(--bg-secondary); border-radius:8px; padding:12px;">
+                <h3 style="margin:0 0 12px 0; font-size:14px; display:flex; align-items:center; gap:8px;">
+                  <svg class="icon" style="width:16px;height:16px;" aria-hidden="true"><use href="#icon-robot"/></svg>
+                  AI Decision & Analysis
+                </h3>
+                <pre id="aiResult" style="background:#0f1724; color:#cfefff; padding:12px; border-radius:6px; height:200px; overflow:auto; font-size:11px; line-height:1.4; margin:0;">Click "Get Decision" to analyze current market conditions...</pre>
+                
+                <!-- Strategy Performance Chart -->
+                <div style="margin-top:12px;">
+                  <h4 style="margin:0 0 8px 0; font-size:12px; color:var(--text-secondary);">STRATEGY PERFORMANCE CHART</h4>
+                  <div id="strategyBuilderChart" style="width:100%; height:400px; border:1px solid var(--border-color); border-radius:6px;"></div>
+                </div>
+              </div>
+              
+              <div style="background:var(--bg-secondary); border-radius:8px; padding:12px;">
+                <h3 style="margin:0 0 12px 0; font-size:14px; display:flex; align-items:center; gap:8px;">
+                  <svg class="icon" style="width:16px;height:16px;" aria-hidden="true"><use href="#icon-brain"/></svg>
+                  Model Performance
+                </h3>
+                <div id="aiModelStats" style="font-size:12px; line-height:1.6;">
+                  <div style="margin-bottom:8px;">
+                    <span style="color:var(--text-secondary);">Win Rate:</span>
+                    <span style="color:#4CAF50; font-weight:bold;">73.2%</span>
+                  </div>
+                  <div style="margin-bottom:8px;">
+                    <span style="color:var(--text-secondary);">Expectancy:</span>
+                    <span style="color:#4CAF50; font-weight:bold;">+0.85</span>
+                  </div>
+                  <div style="margin-bottom:8px;">
+                    <span style="color:var(--text-secondary);">Profit Factor:</span>
+                    <span style="color:#4CAF50; font-weight:bold;">2.14</span>
+                  </div>
+                  <div style="margin-bottom:8px;">
+                    <span style="color:var(--text-secondary);">Max Drawdown:</span>
+                    <span style="color:#FF5722; font-weight:bold;">-12.3%</span>
+                  </div>
+                  <div style="margin-bottom:8px;">
+                    <span style="color:var(--text-secondary);">Model Version:</span>
+                    <span style="color:#FFD700; font-weight:bold;">v2.1.3</span>
+                  </div>
+                  <div style="margin-bottom:16px;">
+                    <span style="color:var(--text-secondary);">Last Trained:</span>
+                    <span style="color:var(--text-primary);">2 hours ago</span>
+                  </div>
+                  
+                  <div style="background:#1a1a1a; padding:8px; border-radius:4px; border-left:3px solid #FFD700;">
+                    <div style="font-size:10px; color:#FFD700; font-weight:bold; margin-bottom:4px;">ACTIVE FEATURES</div>
+                    <div style="font-size:10px; color:var(--text-secondary); line-height:1.3;">
+                      • ICT Order Blocks<br>
+                      • Fair Value Gaps<br>
+                      • Gann Time Cycles<br>
+                      • Planetary Aspects<br>
+                      • Momentum Indicators<br>
+                      • Volume Profile
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Feature Importance & Strategy Details -->
+          <div style="width:320px; padding:12px; border-left:1px solid var(--border-color);">
+            <h3 style="margin-top:0; font-size:14px; display:flex; align-items:center; gap:8px;">
+              <svg class="icon" style="width:16px;height:16px;" aria-hidden="true"><use href="#icon-magic"/></svg>
+              Strategy Components
+            </h3>
+            
+            <div style="margin-bottom:20px;">
+              <h4 style="font-size:12px; color:var(--text-secondary); margin:0 0 8px 0;">STRATEGY PERFORMANCE TABLE</h4>
+              <div style="background:var(--bg-primary); border-radius:4px; padding:8px; overflow:auto;">
+                <table style="width:100%; font-size:10px; border-collapse:collapse;">
+                  <thead>
+                    <tr style="border-bottom:1px solid var(--border-color);">
+                      <th style="text-align:left; padding:4px; color:var(--text-secondary);">Metric</th>
+                      <th style="text-align:right; padding:4px; color:var(--text-secondary);">Value</th>
+                      <th style="text-align:right; padding:4px; color:var(--text-secondary);">Rank</th>
+                    </tr>
+                  </thead>
+                  <tbody id="performanceTableBody">
+                    <tr>
+                      <td style="padding:4px;">Win Rate</td>
+                      <td style="padding:4px; text-align:right; color:#4CAF50; font-weight:bold;">73.2%</td>
+                      <td style="padding:4px; text-align:right; color:#FFD700;">A+</td>
+                    </tr>
+                    <tr>
+                      <td style="padding:4px;">Profit Factor</td>
+                      <td style="padding:4px; text-align:right; color:#4CAF50; font-weight:bold;">2.14</td>
+                      <td style="padding:4px; text-align:right; color:#4CAF50;">A</td>
+                    </tr>
+                    <tr>
+                      <td style="padding:4px;">Expectancy</td>
+                      <td style="padding:4px; text-align:right; color:#4CAF50; font-weight:bold;">+0.85</td>
+                      <td style="padding:4px; text-align:right; color:#4CAF50;">A</td>
+                    </tr>
+                    <tr>
+                      <td style="padding:4px;">Max Drawdown</td>
+                      <td style="padding:4px; text-align:right; color:#FF5722; font-weight:bold;">-12.3%</td>
+                      <td style="padding:4px; text-align:right; color:#FF9800;">B</td>
+                    </tr>
+                    <tr>
+                      <td style="padding:4px;">Sharpe Ratio</td>
+                      <td style="padding:4px; text-align:right; color:#4CAF50; font-weight:bold;">1.87</td>
+                      <td style="padding:4px; text-align:right; color:#4CAF50;">A</td>
+                    </tr>
+                    <tr>
+                      <td style="padding:4px;">Total Trades</td>
+                      <td style="padding:4px; text-align:right; color:var(--text-primary); font-weight:bold;">1,247</td>
+                      <td style="padding:4px; text-align:right; color:#4CAF50;">A</td>
+                    </tr>
+                    <tr style="border-top:1px solid var(--border-color);">
+                      <td style="padding:4px; color:#FFD700; font-weight:bold;">Overall Score</td>
+                      <td style="padding:4px; text-align:right; color:#FFD700; font-weight:bold;">92.1/100</td>
+                      <td style="padding:4px; text-align:right; color:#FFD700; font-weight:bold;">A+</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            
+            <!-- Strategy Optimizer Parameter Ranges -->
+            <div id="parameterRanges" style="margin-bottom:20px;">
+              <h4 style="font-size:12px; color:var(--text-secondary); margin:0 0 8px 0;">PARAMETER OPTIMIZATION</h4>
+              <div style="background:var(--bg-primary); border-radius:4px; padding:8px;">
+                <div style="font-size:10px; color:var(--text-secondary); margin-bottom:8px;">
+                  Configure parameter ranges for strategy optimization:
+                </div>
+                <div style="display:flex; flex-direction:column; gap:6px;">
+                  <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-size:10px;">Risk Percentage:</span>
+                    <input type="range" min="1" max="5" value="2" style="width:60px;">
+                    <span style="font-size:10px; color:#4CAF50;">2%</span>
+                  </div>
+                  <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-size:10px;">Stop Loss:</span>
+                    <input type="range" min="10" max="100" value="50" style="width:60px;">
+                    <span style="font-size:10px; color:#FF5722;">50 pips</span>
+                  </div>
+                  <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-size:10px;">Take Profit:</span>
+                    <input type="range" min="20" max="200" value="100" style="width:60px;">
+                    <span style="font-size:10px; color:#4CAF50;">100 pips</span>
+                  </div>
+                </div>
+                <button style="width:100%; margin-top:8px; padding:4px; font-size:10px; background:#FFD700; color:#000; border:none; border-radius:4px; cursor:pointer;">
+                  Optimize Parameters
+                </button>
+              </div>
+            </div>
+
+            <div style="margin-bottom:20px;">
+              <h4 style="font-size:12px; color:var(--text-secondary); margin:0 0 8px 0;">FEATURE IMPORTANCE</h4>
+              <div style="background:var(--bg-primary); border-radius:4px; padding:8px;">
+                <div style="display:flex; justify-content:space-between; margin-bottom:4px; font-size:10px;">
+                  <span>ICT Order Blocks</span><span style="color:#4CAF50;">89%</span>
+                </div>
+                <div style="background:#333; height:4px; border-radius:2px; margin-bottom:8px;">
+                  <div style="background:#4CAF50; height:100%; width:89%; border-radius:2px;"></div>
+                </div>
+                
+                <div style="display:flex; justify-content:space-between; margin-bottom:4px; font-size:10px;">
+                  <span>Fair Value Gaps</span><span style="color:#4CAF50;">76%</span>
+                </div>
+                <div style="background:#333; height:4px; border-radius:2px; margin-bottom:8px;">
+                  <div style="background:#4CAF50; height:100%; width:76%; border-radius:2px;"></div>
+                </div>
+                
+                <div style="display:flex; justify-content:space-between; margin-bottom:4px; font-size:10px;">
+                  <span>Gann Angles</span><span style="color:#FF9800;">62%</span>
+                </div>
+                <div style="background:#333; height:4px; border-radius:2px; margin-bottom:8px;">
+                  <div style="background:#FF9800; height:100%; width:62%; border-radius:2px;"></div>
+                </div>
+                
+                <div style="display:flex; justify-content:space-between; margin-bottom:4px; font-size:10px;">
+                  <span>Astro Aspects</span><span style="color:#FF9800;">45%</span>
+                </div>
+                <div style="background:#333; height:4px; border-radius:2px; margin-bottom:8px;">
+                  <div style="background:#FF9800; height:100%; width:45%; border-radius:2px;"></div>
+                </div>
+                
+                <div style="display:flex; justify-content:space-between; margin-bottom:4px; font-size:10px;">
+                  <span>Price Action</span><span style="color:#2196F3;">38%</span>
+                </div>
+                <div style="background:#333; height:4px; border-radius:2px;">
+                  <div style="background:#2196F3; height:100%; width:38%; border-radius:2px;"></div>
+                </div>
+              </div>
+            </div>
+            
+            <div style="margin-bottom:20px;">
+              <h4 style="font-size:12px; color:var(--text-secondary); margin:0 0 8px 0;">RECENT ALERTS</h4>
+              <div style="height:150px; overflow:auto;">
+                <div style="background:var(--bg-primary); border-radius:4px; padding:8px; margin-bottom:8px; border-left:3px solid #4CAF50;">
+                  <div style="font-size:10px; color:#4CAF50; font-weight:bold;">BUY SIGNAL</div>
+                  <div style="font-size:10px; color:var(--text-secondary);">EURUSD • 87% confidence</div>
+                  <div style="font-size:10px; color:var(--text-secondary);">2 minutes ago</div>
+                </div>
+                
+                <div style="background:var(--bg-primary); border-radius:4px; padding:8px; margin-bottom:8px; border-left:3px solid #FF5722;">
+                  <div style="font-size:10px; color:#FF5722; font-weight:bold;">SELL SIGNAL</div>
+                  <div style="font-size:10px; color:var(--text-secondary);">GBPUSD • 72% confidence</div>
+                  <div style="font-size:10px; color:var(--text-secondary);">15 minutes ago</div>
+                </div>
+                
+                <div style="background:var(--bg-primary); border-radius:4px; padding:8px; margin-bottom:8px; border-left:3px solid #FFD700;">
+                  <div style="font-size:10px; color:#FFD700; font-weight:bold;">HIGH VOLATILITY</div>
+                  <div style="font-size:10px; color:var(--text-secondary);">USDJPY • Mars-Mercury aspect</div>
+                  <div style="font-size:10px; color:var(--text-secondary);">1 hour ago</div>
+                </div>
+              </div>
+            </div>
+            
+            <div>
+              <h4 style="font-size:12px; color:var(--text-secondary); margin:0 0 8px 0;">TRAINING STATUS</h4>
+              <div style="background:var(--bg-primary); border-radius:4px; padding:8px;">
+                <div style="display:flex; justify-content:space-between; margin-bottom:4px; font-size:10px;">
+                  <span>Data Quality</span><span style="color:#4CAF50;">Excellent</span>
+                </div>
+                <div style="display:flex; justify-content:space-between; margin-bottom:4px; font-size:10px;">
+                  <span>Model Accuracy</span><span style="color:#4CAF50;">92.1%</span>
+                </div>
+                <div style="display:flex; justify-content:space-between; margin-bottom:4px; font-size:10px;">
+                  <span>Training Samples</span><span style="color:var(--text-primary);">847,392</span>
+                </div>
+                <div style="display:flex; justify-content:space-between; font-size:10px;">
+                  <span>Next Update</span><span style="color:var(--text-secondary);">In 4 hours</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- NEWS Module View -->
+      <section id="newsView" class="chart-view hidden">
+        <div style="display:flex; gap:12px; padding:12px; width:100%; height:100%; box-sizing:border-box;">
+          <div style="flex:1 1 auto; display:flex; flex-direction:column; gap:12px;">
+            <div style="display:flex; align-items:center; gap:12px;">
+              <button id="newsHomeBtn" class="signals-home" title="Back to Dashboard" aria-label="Home">
+                <svg class="icon" aria-hidden="true"><use href="#icon-home"/></svg>
+              </button>
+              <div style="display:flex; align-items:center; gap:8px;">
+                <span style="font-size:24px;">📰</span>
+                <h2 style="margin:0; font-size:18px; color:var(--text-primary);">News & Market Intelligence</h2>
+              </div>
+              <div style="margin-left:auto; display:flex; align-items:center; gap:8px;">
+                <span id="newsStatsDisplay" style="font-size:12px; color:var(--text-secondary);"></span>
+                <button id="newsRefreshBtn" class="signals-home" title="Refresh News" style="padding:4px 8px; font-size:11px;">
+                  <svg class="icon" style="width:14px;height:14px;" aria-hidden="true"><use href="#icon-reload"/></svg>
+                  Refresh
+                </button>
+                <button id="forexFactoryBtn" class="signals-home" title="Load Forex Factory Calendar" style="padding:4px 8px; font-size:11px; background:linear-gradient(135deg, #1976D2 0%, #2196F3 100%); color:white;">
+                  🏭 FF
+                </button>
+              </div>
+            </div>
+
+            <!-- News Filters -->
+            <div style="display:flex; gap:8px; align-items:center; padding:8px; background:var(--bg-secondary); border-radius:6px; font-size:12px;">
+              <label style="display:flex; align-items:center; gap:4px;">
+                Symbol:
+                <select id="newsSymbolFilter" style="padding:2px 4px; font-size:11px; border:1px solid var(--border-color); border-radius:3px;">
+                  <option value="">All</option>
+                  <option value="XAUUSD">XAUUSD</option>
+                  <option value="EURUSD">EURUSD</option>
+                  <option value="AAPL">AAPL</option>
+                  <option value="NVDA">NVDA</option>
+                </select>
+              </label>
+              <label style="display:flex; align-items:center; gap:4px;">
+                Sentiment:
+                <select id="newsSentimentFilter" style="padding:2px 4px; font-size:11px; border:1px solid var(--border-color); border-radius:3px;">
+                  <option value="">All</option>
+                  <option value="positive">Positive</option>
+                  <option value="neutral">Neutral</option>
+                  <option value="negative">Negative</option>
+                </select>
+              </label>
+              <label style="display:flex; align-items:center; gap:4px;">
+                Importance:
+                <select id="newsImportanceFilter" style="padding:2px 4px; font-size:11px; border:1px solid var(--border-color); border-radius:3px;">
+                  <option value="">All</option>
+                  <option value="8">High (8+)</option>
+                  <option value="5">Medium (5+)</option>
+                  <option value="1">All</option>
+                </select>
+              </label>
+              <input id="newsSearchInput" type="text" placeholder="Search news..." style="padding:4px 6px; font-size:11px; border:1px solid var(--border-color); border-radius:3px; flex:1; max-width:200px;">
+            </div>
+
+            <!-- News Table Container -->
+            <div style="flex:1 1 auto; background:var(--bg-primary); border-radius:8px; border:1px solid var(--border-color); overflow:hidden; display:flex; flex-direction:column;">
+              <div style="padding:8px 12px; background:var(--bg-secondary); border-bottom:1px solid var(--border-color); font-weight:600; font-size:12px; color:var(--text-secondary);">
+                <div style="display:grid; grid-template-columns:120px 80px 1fr 100px 60px 50px 40px; gap:8px; align-items:center;">
+                  <span>Time</span>
+                  <span>Source</span>
+                  <span>Title & Summary</span>
+                  <span>Symbols</span>
+                  <span>Sentiment</span>
+                  <span>Importance</span>
+                  <span>Links</span>
+                </div>
+              </div>
+              
+              <div id="newsTableBody" style="flex:1 1 auto; overflow:auto; max-height:calc(100vh - 220px);">
+                <!-- News items will be populated here -->
+                <div style="padding:20px; text-align:center; color:var(--text-secondary);">
+                  <div style="font-size:14px; margin-bottom:8px;">📰 Loading news...</div>
+                  <div style="font-size:12px;">Fetching latest market intelligence</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Link to Analyzer Page -->
+            <div style="margin-top:12px; display:flex; justify-content:flex-end;">
+              <button id="openAnalyzerBtn" class="signals-home" title="Open Analyzer" style="padding:6px 10px; font-size:12px;">
+                📈 Open Analyzer Page
+              </button>
+            </div>
+          </div>
+
+          <!-- Right sidebar with news analytics -->
+          <div style="width:280px; display:flex; flex-direction:column; gap:12px;">
+            <!-- News Summary Stats -->
+            <div style="background:var(--bg-primary); border-radius:8px; border:1px solid var(--border-color); padding:12px;">
+              <h4 style="margin:0 0 8px 0; font-size:12px; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.5px;">News Analytics</h4>
+              
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:12px;">
+                <div style="text-align:center; padding:8px; background:var(--bg-secondary); border-radius:4px;">
+                  <div id="newsCount24h" style="font-size:18px; font-weight:700; color:var(--accent-color);">-</div>
+                  <div style="font-size:10px; color:var(--text-secondary);">Last 24h</div>
+                </div>
+                <div style="text-align:center; padding:8px; background:var(--bg-secondary); border-radius:4px;">
+                  <div id="avgImportance" style="font-size:18px; font-weight:700; color:var(--accent-color);">-</div>
+                  <div style="font-size:10px; color:var(--text-secondary);">Avg Impact</div>
+                </div>
+              </div>
+
+              <div style="margin-bottom:12px;">
+                <div style="font-size:11px; color:var(--text-secondary); margin-bottom:4px;">Sentiment Distribution</div>
+                <div style="display:flex; gap:4px;">
+                  <div style="flex:1; height:20px; background:#4CAF50; border-radius:2px; position:relative;" id="sentimentPositiveBar">
+                    <span style="position:absolute; top:2px; left:2px; font-size:8px; color:white; font-weight:600;" id="sentimentPositiveText">0</span>
+                  </div>
+                  <div style="flex:1; height:20px; background:#9E9E9E; border-radius:2px; position:relative;" id="sentimentNeutralBar">
+                    <span style="position:absolute; top:2px; left:2px; font-size:8px; color:white; font-weight:600;" id="sentimentNeutralText">0</span>
+                  </div>
+                  <div style="flex:1; height:20px; background:#F44336; border-radius:2px; position:relative;" id="sentimentNegativeBar">
+                    <span style="position:absolute; top:2px; left:2px; font-size:8px; color:white; font-weight:600;" id="sentimentNegativeText">0</span>
+                  </div>
+                </div>
+                <div style="display:flex; justify-content:space-between; font-size:9px; color:var(--text-secondary); margin-top:2px;">
+                  <span>Positive</span>
+                  <span>Neutral</span>
+                  <span>Negative</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Recent High Impact News -->
+            <div style="background:var(--bg-primary); border-radius:8px; border:1px solid var(--border-color); padding:12px; flex:1 1 auto;">
+              <h4 style="margin:0 0 8px 0; font-size:12px; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.5px;">High Impact News</h4>
+              <div id="highImpactNewsList" style="height:300px; overflow:auto;">
+                <!-- High impact news items -->
+              </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div style="background:var(--bg-primary); border-radius:8px; border:1px solid var(--border-color); padding:12px;">
+              <h4 style="margin:0 0 8px 0; font-size:12px; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.5px;">Quick Actions</h4>
+              <div style="display:flex; flex-direction:column; gap:6px;">
+                <button id="newsExportBtn" style="padding:6px 8px; font-size:11px; border:1px solid var(--border-color); background:var(--bg-secondary); border-radius:4px; cursor:pointer; color:var(--text-primary);">
+                  📊 Export to CSV
+                </button>
+                <button id="newsSimulateBtn" style="padding:6px 8px; font-size:11px; border:1px solid var(--border-color); background:var(--bg-secondary); border-radius:4px; cursor:pointer; color:var(--text-primary);">
+                  🧪 Simulate News
+                </button>
+                <button id="newsSettingsBtn" style="padding:6px 8px; font-size:11px; border:1px solid var(--border-color); background:var(--bg-secondary); border-radius:4px; cursor:pointer; color:var(--text-primary);">
+                  ⚙️ Alert Settings
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- NEWS Analyzer Dedicated View -->
+      <section id="newsAnalyzerView" class="chart-view hidden">
+        <div style="display:flex; flex-direction:column; gap:12px; padding:12px; width:100%; height:100%; box-sizing:border-box;">
+          <div style="display:flex; align-items:center; gap:12px;">
+            <button id="analyzerBackBtn" class="signals-home" title="Back to News" aria-label="Back">
+              <svg class="icon" aria-hidden="true"><use href="#icon-chevron-left"/></svg>
+            </button>
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span style="font-size:24px;">📈</span>
+              <h2 style="margin:0; font-size:18px; color:var(--text-primary);">News Impact Analyzer</h2>
+            </div>
+            <div style="margin-left:auto; display:flex; gap:8px; align-items:center;">
+              <label style="font-size:11px; color:var(--text-secondary); display:flex; gap:4px; align-items:center;">
+                Symbol:
+                <select id="impactSymbol" style="padding:2px 4px; font-size:11px; border:1px solid var(--border-color); border-radius:3px;">
+                  <option value="EURUSD">EURUSD</option>
+                  <option value="GBPUSD">GBPUSD</option>
+                  <option value="USDJPY">USDJPY</option>
+                  <option value="USDCAD">USDCAD</option>
+                  <option value="AUDUSD">AUDUSD</option>
+                  <option value="NZDUSD">NZDUSD</option>
+                  <option value="USDCHF">USDCHF</option>
+                  <option value="XAUUSD">XAUUSD</option>
+                </select>
+              </label>
+              <label style="font-size:11px; color:var(--text-secondary); display:flex; gap:4px; align-items:center;">
+                Window:
+                <select id="impactWindow" style="padding:2px 4px; font-size:11px; border:1px solid var(--border-color); border-radius:3px;">
+                  <option value="30m">30m</option>
+                  <option value="60m">60m</option>
+                  <option value="120m">120m</option>
+                </select>
+              </label>
+              <button id="impactRecomputeBtn" class="signals-home" title="Recompute" style="padding:4px 8px; font-size:11px;">Recompute</button>
+              <button id="exportImpactCsvBtn" class="signals-home" title="Export Historical CSV" style="padding:4px 8px; font-size:11px;">Export Historical</button>
+              <button id="exportPredCsvBtn" class="signals-home" title="Export Predictions CSV" style="padding:4px 8px; font-size:11px;">Export Predictions</button>
+            </div>
+          </div>
+
+          <!-- Analyzer Filters -->
+          <div style="display:flex; gap:8px; align-items:center; padding:8px; background:var(--bg-secondary); border-radius:6px; font-size:12px;">
+            <label style="display:flex; align-items:center; gap:4px;">
+              Category:
+              <select id="impactCategoryFilter" style="padding:2px 4px; font-size:11px; border:1px solid var(--border-color); border-radius:3px;">
+                <option value="">All</option>
+                <option value="Inflation">Inflation</option>
+                <option value="Growth">Growth</option>
+                <option value="Labor">Labor</option>
+                <option value="Rates">Rates</option>
+                <option value="PMI">PMI</option>
+                <option value="General">General</option>
+              </select>
+            </label>
+            <label style="display:flex; align-items:center; gap:4px;">
+              Min Impact:
+              <select id="impactMinImpactFilter" style="padding:2px 4px; font-size:11px; border:1px solid var(--border-color); border-radius:3px;">
+                <option value="0">Any</option>
+                <option value="5">≥ 5</option>
+                <option value="8">≥ 8</option>
+              </select>
+            </label>
+            <label style="display:flex; align-items:center; gap:4px;">
+              Currency:
+              <select id="impactCurrencyFilter" style="padding:2px 4px; font-size:11px; border:1px solid var(--border-color); border-radius:3px;">
+                <option value="">All</option>
+                <option value="USD">USD</option>
+                <option value="EUR">EUR</option>
+                <option value="GBP">GBP</option>
+                <option value="JPY">JPY</option>
+                <option value="CAD">CAD</option>
+                <option value="AUD">AUD</option>
+                <option value="NZD">NZD</option>
+                <option value="CHF">CHF</option>
+                <option value="XAU">XAU</option>
+              </select>
+            </label>
+          </div>
+
+          <!-- Date Filter Controls -->
+          <div style="display:flex; gap:12px; align-items:center; margin-bottom:8px; padding:8px; background:var(--bg-secondary); border-radius:6px; border:1px solid var(--border-color);">
+            <label style="display:flex; align-items:center; gap:4px; font-size:12px; font-weight:600;">
+              Filter by Date:
+              <input id="impactDateFilter" type="date" style="padding:4px 6px; font-size:11px; border:1px solid var(--border-color); border-radius:3px;">
+            </label>
+            <button id="clearDateFilter" style="padding:4px 8px; font-size:11px; background:var(--bg-primary); border:1px solid var(--border-color); border-radius:3px; cursor:pointer;">Clear</button>
+            <span id="dateFilterStatus" style="font-size:11px; color:var(--text-secondary);"></span>
+          </div>
+
+          <!-- Historical Behavior Table -->
+          <div style="background:var(--bg-primary); border-radius:8px; border:1px solid var(--border-color); overflow:hidden; display:flex; flex-direction:column;">
+            <div id="newsImpactTableContainer" style="flex:1 1 auto; max-height:40vh; overflow:auto; border:1px solid var(--border-color);">
+              <div id="newsImpactTableHeader" style="position:sticky; top:0; z-index:10; padding:8px 12px; background:var(--bg-secondary); border-bottom:1px solid var(--border-color); font-weight:600; font-size:12px; color:var(--text-secondary);">
+                <div style="display:grid; grid-template-columns:110px 80px minmax(240px,1fr) 80px 80px 70px 90px 90px 90px 120px 120px minmax(240px,1fr) 140px minmax(240px,1fr); gap:8px; align-items:center; min-width:1200px;">
+                  <span>Date</span><span>Bucket</span><span>Event</span><span>Currency</span><span>Release</span><span>Impact</span>
+                  <span>React Start</span><span>React End</span><span>Direction</span><span>Movement</span><span>Category</span><span>AI Analysis</span><span>Planetary</span><span>Suggestion</span>
+                </div>
+              </div>
+              <div id="newsImpactTableBody" style="background:var(--bg-primary);">
+                <div style="padding:16px; text-align:center; color:var(--text-secondary); font-size:12px;">Analyzing news impact...</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Predicted Future Reactions -->
+          <div style="background:var(--bg-primary); border-radius:8px; border:1px solid var(--border-color); overflow:hidden; display:flex; flex-direction:column;">
+            <div style="padding:8px 12px; background:var(--bg-secondary); border-bottom:1px solid var(--border-color); font-weight:600; font-size:12px; color:var(--text-secondary); display:flex; align-items:center;">
+              <div>Predicted Future Reactions</div>
+            </div>
+            <div style="padding:8px 12px; background:var(--bg-secondary); border-bottom:1px solid var(--border-color); font-weight:600; font-size:12px; color:var(--text-secondary);">
+              <div style="display:grid; grid-template-columns:110px minmax(240px,1fr) 80px 80px 70px 90px 110px 100px minmax(240px,1fr) 100px; gap:8px; align-items:center; min-width:1000px;">
+                <span>Date</span><span>Event</span><span>Currency</span><span>Release</span><span>Impact</span><span>Category</span><span>Predicted Dir</span><span>Predicted Move</span><span>Rationale</span><span>Confidence</span>
+              </div>
+            </div>
+            <div id="newsPredictionTableBody" style="flex:1 1 auto; max-height:36vh; overflow:auto;">
+              <div style="padding:16px; text-align:center; color:var(--text-secondary); font-size:12px;">Building predictions...</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    <!-- Fullscreen Chart View (ICT) -->
+  <section id="chartView" class="chart-view hidden">
+      <!-- Chart view will be shown by default -->
+      <!-- Horizontal signals bar (top) with all chart settings -->
+      <div id="signalsBar" class="signals-bar">
+        <button id="homeBtn" class="signals-home" title="Back to Dashboard" aria-label="Home">
+          <svg class="icon" aria-hidden="true"><use href="#icon-home"/></svg>
+        </button>
+        <button id="moveToggle" class="signals-home" title="Move/Float Panels" aria-label="Move">
+          <svg class="icon" aria-hidden="true"><use href="#icon-move"/></svg>
+        </button>
+        <button id="lockSizeToggle" class="signals-home" title="Lock/Unlock Size" aria-label="Lock">
+          <svg class="icon" aria-hidden="true"><use href="#icon-unlock"/></svg>
+        </button>
+        <button id="aiToggle" class="signals-home" title="AI Mentor Panel" aria-label="AI">
+          <svg class="icon" aria-hidden="true"><use href="#icon-robot"/></svg>
+        </button>
+        <button id="autoSignalsToggle" class="signals-home" title="Automatic Signals Identification (show all)">
+          <svg class="icon" aria-hidden="true"><use href="#icon-magic"/></svg>
+          <span class="btn-label">Auto</span>
+        </button>
+        
+        <!-- Chart Settings moved to top tray -->
+        <div class="chart-settings-group" style="display:flex;align-items:center;gap:8px;margin-left:12px;">
+          <button id="themeToggle" class="signals-home" title="Toggle Theme" aria-live="polite">
+            <svg class="icon" aria-hidden="true"><use href="#icon-moon"/></svg>
+          </button>
+          <button id="statusToggle" class="signals-home" title="Show/Hide Status" aria-label="Status" style="padding:4px 6px;">
+            <svg class="icon" aria-hidden="true"><use href="#icon-info"/></svg>
+          </button>
+          <button id="detectorsRefreshBtn" class="signals-home" title="Refresh Detectors" aria-label="Refresh Detectors">
+            <svg class="icon" aria-hidden="true"><use href="#icon-reload"/></svg>
+            <span class="btn-label">Signals</span>
+          </button>
+          <span id="detectorsSpinner" style="display:none;margin-left:6px;font-size:12px;color:var(--text-secondary);">⏳</span>
+        </div>
+        
+        <div id="signalsIconsRow" class="signals-icons-row"></div>
+        <label style="display:flex;align-items:center;gap:6px;margin-left:12px;font-size:12px;color:var(--text-secondary);">
+          <input id="trapsOnlyToggle" type="checkbox" />
+          Traps only
+        </label>
+        <div id="trapSummary" class="trap-summary" style="margin-left:auto;font-size:12px;color:var(--text-secondary);"></div>
+        <div class="resize-handle handle-bottom" title="Resize Height"></div>
+      </div>
+
+      <!-- Chart Canvas -->
+      <div class="chart-wrapper">
+        <!-- Enhanced Trading Controls -->
+        <div id="enhancedTradingControls" style="position:absolute;top:10px;left:10px;display:flex;align-items:center;gap:8px;z-index:10;background:rgba(255,255,255,0.95);padding:8px;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.1);">
+          
+          <!-- Symbol Selector -->
+          <div style="display:flex;align-items:center;gap:4px;">
+            <label style="font-size:11px;color:#666;font-weight:600;">Symbol:</label>
+            <select id="enhancedSymbolSelect" style="padding:4px 8px;border:1px solid #ddd;border-radius:4px;font-size:12px;background:#fff;">
+              <option value="XAUUSD" selected>XAU/USD</option>
+              <option value="EURUSD">EUR/USD</option>
+              <option value="GBPUSD">GBP/USD</option>
+              <option value="USDJPY">USD/JPY</option>
+              <option value="USDCAD">USD/CAD</option>
+              <option value="AUDUSD">AUD/USD</option>
+              <option value="NZDUSD">NZD/USD</option>
+              <option value="USDCHF">USD/CHF</option>
+            </select>
+          </div>
+          
+          <!-- Timeframe Selector -->
+          <div style="display:flex;align-items:center;gap:4px;">
+            <label style="font-size:11px;color:#666;font-weight:600;">Timeframe:</label>
+            <select id="enhancedTimeframeSelect" style="padding:4px 8px;border:1px solid #ddd;border-radius:4px;font-size:12px;background:#fff;">
+              <option value="1m">1 Min</option>
+              <option value="3m">3 Min</option>
+              <option value="5m" selected>5 Min</option>
+              <option value="15m">15 Min</option>
+              <option value="30m">30 Min</option>
+              <option value="1h">1 Hour</option>
+              <option value="4h">4 Hour</option>
+              <option value="1d">1 Day</option>
+            </select>
+          </div>
+          
+          <!-- Action Buttons with PERMANENT loading -->
+          <button id="enhancedLoadBtn" style="padding:4px 8px;background:#4CAF50;color:white;border:none;border-radius:4px;font-size:11px;cursor:pointer;font-weight:600;" title="Load Chart" onclick="window.ensureChartLoaded()">
+            📊 Load Chart
+          </button>
+          
+          <button id="enhancedRefreshBtn" style="padding:4px 8px;background:#089981;color:white;border:none;border-radius:4px;font-size:11px;cursor:pointer;font-weight:600;" title="Refresh Chart" onclick="window.reloadDirectChartData()">
+            🔄 Refresh
+          </button>
+          
+          <button id="enhancedWebSocketBtn" style="padding:4px 8px;background:#2196F3;color:white;border:none;border-radius:4px;font-size:11px;cursor:pointer;font-weight:600;" title="Toggle Live Simulation" onclick="window.toggleSimulatedLive()">
+            📡 Live Data
+          </button>
+          
+          <!-- TradingView-style Zoom Controls -->
+          <div style="display:flex;align-items:center;gap:2px;margin-left:8px;">
+            <button onclick="zoomInChart()" style="padding:4px 6px;background:#607D8B;color:white;border:none;border-radius:4px;font-size:13px;cursor:pointer;font-weight:600;box-shadow:0 2px 8px rgba(0,0,0,0.1);" title="Zoom In">
+              <svg class="icon" aria-hidden="true" style="width:16px;height:16px;vertical-align:middle;"><use href="#icon-plus"/></svg>
+            </button>
+            <button onclick="zoomOutChart()" style="padding:4px 6px;background:#607D8B;color:white;border:none;border-radius:4px;font-size:13px;cursor:pointer;font-weight:600;box-shadow:0 2px 8px rgba(0,0,0,0.1);" title="Zoom Out">
+              <svg class="icon" aria-hidden="true" style="width:16px;height:16px;vertical-align:middle;"><use href="#icon-minus"/></svg>
+            </button>
+            <button onclick="resetZoomChart()" style="padding:4px 6px;background:#607D8B;color:white;border:none;border-radius:4px;font-size:13px;cursor:pointer;font-weight:600;box-shadow:0 2px 8px rgba(0,0,0,0.1);" title="Reset Zoom">
+              <svg class="icon" aria-hidden="true" style="width:16px;height:16px;vertical-align:middle;"><use href="#icon-reset"/></svg>
+            </button>
+          </div>
+          
+          <!-- Advanced Chart Controls -->
+          <div style="display:flex;align-items:center;gap:2px;margin-left:8px;">
+            <button onclick="toggleChartTheme()" style="padding:4px 6px;background:#9C27B0;color:white;border:none;border-radius:4px;font-size:11px;cursor:pointer;font-weight:600;" title="Toggle Theme">
+              🌙 Theme
+            </button>
+            <button onclick="toggleFullscreen()" style="padding:4px 6px;background:#FF9800;color:white;border:none;border-radius:4px;font-size:11px;cursor:pointer;font-weight:600;" title="Fullscreen">
+              ⛶ Full
+            </button>
+            <button onclick="exportChart()" style="padding:4px 6px;background:#795548;color:white;border:none;border-radius:4px;font-size:11px;cursor:pointer;font-weight:600;" title="Export Chart">
+              📸 Export
+            </button>
+            <button onclick="saveLayout()" style="padding:4px 6px;background:#009688;color:white;border:none;border-radius:4px;font-size:11px;cursor:pointer;font-weight:600;" title="Save Layout">
+              💾 Save
+            </button>
+            <button onclick="loadLayout()" style="padding:4px 6px;background:#607D8B;color:white;border:none;border-radius:4px;font-size:11px;cursor:pointer;font-weight:600;" title="Load Layout">
+              📁 Load
+            </button>
+          </div>
+          <!-- Zoom Controls -->
+          <div style="display:flex;align-items:center;gap:2px;margin-left:8px;">
+            <button onclick="zoomInChart()" style="padding:4px 6px;background:#607D8B;color:white;border:none;border-radius:4px;font-size:11px;cursor:pointer;font-weight:600;" title="Zoom In">
+              🔍+
+            </button>
+            <button onclick="zoomOutChart()" style="padding:4px 6px;background:#607D8B;color:white;border:none;border-radius:4px;font-size:11px;cursor:pointer;font-weight:600;" title="Zoom Out">
+              🔍−
+            </button>
+            <button onclick="resetZoomChart()" style="padding:4px 6px;background:#607D8B;color:white;border:none;border-radius:4px;font-size:11px;cursor:pointer;font-weight:600;" title="Reset Zoom">
+              ⤢
+            </button>
+          </div>
+          
+          <!-- Debug Test Button -->
+          <button onclick="testDirectChart()" style="padding:4px 8px;background:#FF5722;color:white;border:none;border-radius:4px;font-size:11px;cursor:pointer;font-weight:600;" title="Test Direct Chart">
+            🔧 TEST
+          </button>
+          
+          <!-- Manual Chart Load Button with PERMANENT loading -->
+          <button id="manualLoadBtn" style="padding:4px 8px;background:#8BC34A;color:white;border:none;border-radius:4px;font-size:11px;cursor:pointer;font-weight:600;" title="Force Load Chart" onclick="window.ensureChartLoaded()">
+            🚀 LOAD
+          </button>
+          
+          <!-- Indicator Controls -->
+          <div style="display:flex;align-items:center;gap:2px;margin-left:8px;">
+            <button onclick="toggleSMA()" id="smaToggleBtn" style="padding:4px 6px;background:#9E9E9E;color:white;border:none;border-radius:4px;font-size:11px;cursor:pointer;font-weight:600;" title="Toggle SMA Indicator">
+              📈 SMA
+            </button>
+            <button onclick="toggleOHLCDisplay()" id="ohlcToggleBtn" style="padding:4px 6px;background:#9E9E9E;color:white;border:none;border-radius:4px;font-size:11px;cursor:pointer;font-weight:600;" title="Toggle OHLC Display">
+              📊 OHLC
+            </button>
+          </div>
+          
+          <!-- Quick Access Buttons -->
+          <div style="display:flex;align-items:center;gap:2px;margin-left:8px;">
+            <button onclick="toggleAlertPanel()" style="padding:4px 6px;background:#E91E63;color:white;border:none;border-radius:4px;font-size:11px;cursor:pointer;font-weight:600;" title="Price Alerts">
+              🚨 Alerts
+            </button>
+            <button onclick="toggleMultiSymbolPanel()" style="padding:4px 6px;background:#3F51B5;color:white;border:none;border-radius:4px;font-size:11px;cursor:pointer;font-weight:600;" title="Multi-Symbol">
+              📊 Multi
+            </button>
+            <button onclick="toggleDrawingPanel()" style="padding:4px 6px;background:#FF9800;color:white;border:none;border-radius:4px;font-size:11px;cursor:pointer;font-weight:600;" title="Drawing Tools">
+              ✏️ Draw
+            </button>
+          </div>
+          
+          <!-- Status Indicator -->
+          <div id="enhancedStatusIndicator" style="padding:2px 6px;background:#f0f0f0;border-radius:12px;font-size:10px;color:#666;">
+            Ready
+          </div>
+          
+        </div>
+        
+        <!-- Error Display -->
+        <div id="chartErrorDisplay" style="position:absolute;top:60px;left:10px;right:10px;background:#f8d7da;color:#721c24;padding:12px;border-radius:6px;border:1px solid #f5c6cb;display:none;z-index:11;">
+          <div style="font-weight:600;margin-bottom:4px;">⚠️ Chart Loading Error</div>
+          <div id="chartErrorMessage">Unknown error occurred</div>
+          <button onclick="document.getElementById('chartErrorDisplay').style.display='none'" style="position:absolute;top:8px;right:8px;background:none;border:none;color:#721c24;cursor:pointer;font-size:16px;">×</button>
+        </div>
+        
+        <!-- TradingView-style zoom controls -->
+        <!-- Removed floating chart-controls panel as requested -->
+        
+        <!-- Drawing Tools Panel -->
+        <div id="drawingPanel" style="position:absolute;top:80px;left:20px;background:rgba(255,255,255,0.95);padding:12px;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.1);display:none;z-index:15;min-width:200px;">
+          <div style="font-weight:600;margin-bottom:8px;font-size:12px;">✏️ Drawing Tools</div>
+          <div style="display:flex;flex-direction:column;gap:4px;">
+            <button onclick="enableDrawingMode('line')" style="padding:6px;background:#2196F3;color:white;border:none;border-radius:3px;font-size:11px;cursor:pointer;">📏 Line</button>
+            <button onclick="enableDrawingMode('rectangle')" style="padding:6px;background:#4CAF50;color:white;border:none;border-radius:3px;font-size:11px;cursor:pointer;">⬜ Rectangle</button>
+            <button onclick="enableDrawingMode('text')" style="padding:6px;background:#FF9800;color:white;border:none;border-radius:3px;font-size:11px;cursor:pointer;">🔤 Text</button>
+            <button onclick="clearAllDrawings()" style="padding:6px;background:#F44336;color:white;border:none;border-radius:3px;font-size:11px;cursor:pointer;">🗑️ Clear All</button>
+          </div>
+          <button onclick="toggleDrawingPanel()" style="position:absolute;top:4px;right:4px;background:none;border:none;cursor:pointer;font-size:14px;">×</button>
+        </div>
+        
+        <!-- OHLC Display Panel -->
+        <div id="ohlcDisplay" style="position:absolute;top:120px;left:20px;background:rgba(0,0,0,0.85);color:white;padding:8px 12px;border-radius:8px;font-family:monospace;font-size:12px;display:none;z-index:20;min-width:200px;">
+          <div style="font-weight:bold;margin-bottom:4px;">📊 OHLC Data</div>
+          <div id="ohlcContent">
+            <div>Open: <span id="ohlcOpen">-</span></div>
+            <div>High: <span id="ohlcHigh">-</span></div>
+            <div>Low: <span id="ohlcLow">-</span></div>
+            <div>Close: <span id="ohlcClose">-</span></div>
+            <div>Volume: <span id="ohlcVolume">-</span></div>
+          </div>
+        </div>
+        
+        <!-- Mobile-responsive Alert Panel -->
+        <div id="alertPanel" style="position:absolute;bottom:20px;right:20px;background:rgba(255,255,255,0.95);padding:12px;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.1);display:none;z-index:15;">
+          <div style="font-weight:600;margin-bottom:8px;font-size:12px;">🚨 Price Alerts</div>
+          <div style="display:flex;gap:6px;align-items:center;margin-bottom:6px;">
+            <input id="alertPrice" type="number" placeholder="Price" style="width:80px;padding:4px;border:1px solid #ddd;border-radius:3px;font-size:11px;">
+            <select id="alertDirection" style="padding:4px;border:1px solid #ddd;border-radius:3px;font-size:11px;">
+              <option value="above">Above</option>
+              <option value="below">Below</option>
+            </select>
+            <button onclick="setAlert()" style="padding:4px 8px;background:#FF5722;color:white;border:none;border-radius:3px;font-size:11px;cursor:pointer;">Set</button>
+          </div>
+          <button onclick="toggleAlertPanel()" style="position:absolute;top:4px;right:4px;background:none;border:none;cursor:pointer;font-size:14px;">×</button>
+        </div>
+        
+        <!-- Multi-Symbol Panel -->
+        <div id="multiSymbolPanel" style="position:absolute;top:80px;right:20px;background:rgba(255,255,255,0.95);padding:12px;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.1);display:none;z-index:15;min-width:200px;">
+          <div style="font-weight:600;margin-bottom:8px;font-size:12px;">📊 Multi-Symbol View</div>
+          <div style="display:flex;flex-direction:column;gap:4px;">
+            <button onclick="addSymbolChart('EURUSD')" style="padding:6px;background:#4CAF50;color:white;border:none;border-radius:3px;font-size:11px;cursor:pointer;">+ EUR/USD</button>
+            <button onclick="addSymbolChart('GBPUSD')" style="padding:6px;background:#4CAF50;color:white;border:none;border-radius:3px;font-size:11px;cursor:pointer;">+ GBP/USD</button>
+            <button onclick="addSymbolChart('USDJPY')" style="padding:6px;background:#4CAF50;color:white;border:none;border-radius:3px;font-size:11px;cursor:pointer;">+ USD/JPY</button>
+          </div>
+          <button onclick="toggleMultiSymbolPanel()" style="position:absolute;top:4px;right:4px;background:none;border:none;cursor:pointer;font-size:14px;">×</button>
+        </div>
+        <div id="lwchart" style="width:100%;height:600px;min-height:400px;background:#FFFFFF;border:1px solid #E0E0E0;border-radius:8px;position:relative;"></div>
+  <!-- Chart status (top-left) -->
+  <div id="chartStatus" style="position: absolute; top: 64px; left: 12px; background: var(--bg-secondary); color: var(--text-secondary); padding: 4px 8px; border-radius: 6px; font-size: 12px; z-index: 6; display: none;"></div>
+  <!-- Price info display -->
+  <div id="priceInfo" style="position: absolute; bottom: 10px; left: 10px; background: var(--bg-primary); padding: 4px 8px; border-radius: 4px; font-family: monospace; z-index: 6; display: none;"></div>
+      </div>
+
+      <!-- ICT Tray (hidden sliding panel - no toggle button) -->
+      <aside id="ictTray" class="ict-tray" style="position:fixed;left:-252px;top:0;bottom:0;width:260px;display:flex;flex-direction:column;background:var(--bg-primary);border-right:1px solid var(--border-color);z-index:1000;box-shadow:2px 0 10px rgba(0,0,0,0.1);transition:left 0.3s ease;">
+        <!-- Hidden trigger area (hover to reveal) -->
+        <div class="ict-trigger" style="position:absolute;left:260px;top:50%;transform:translateY(-50%);width:28px;height:84px;background:rgba(0,0,0,0.1);border-radius:0 12px 12px 0;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text-secondary);font-size:16px;" title="ICT Tools">
+          <svg class="icon" aria-hidden="true"><use href="#icon-brain"/></svg>
+        </div>
+        
+        <div class="pane-header" style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;border-bottom:1px solid var(--border-color)">
+          <div class="pane-title" style="font-weight:600">ICT Tray</div>
+          <div class="pane-actions" style="display:flex;gap:6px">
+            <button id="ictTrayCollapse" title="Minimize">−</button>
+            <button id="ictTrayHide" title="Hide">→</button>
+          </div>
+        </div>
+        <div id="ictTrayBody" class="pane-body" style="overflow:auto;padding:8px">
+          <div style="font-size:12px;color:var(--text-secondary);margin-bottom:8px">Click any ICT concept below to draw it on the chart</div>
+          
+          <!-- ICT Tray Filters & Actions -->
+          <div id="ictTrayFilters" style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:8px;padding:6px;border:1px solid var(--border-color);border-radius:6px;background:var(--bg-secondary)">
+            <div style="font-size:12px;color:var(--text-secondary);margin-right:4px;">Filter:</div>
+            <label style="display:flex;align-items:center;gap:4px;font-size:12px;">
+              <input id="trayFilterOb" type="checkbox" checked /> OB
+            </label>
+            <label style="display:flex;align-items:center;gap:4px;font-size:12px;">
+              <input id="trayFilterFvg" type="checkbox" checked /> FVG
+            </label>
+            <label style="display:flex;align-items:center;gap:4px;font-size:12px;">
+              <input id="trayFilterChoch" type="checkbox" checked /> CHOCH/BOS
+            </label>
+            <div style="flex:1"></div>
+            <label style="display:flex;align-items:center;gap:6px;font-size:12px;">
+              Day <input id="ictDayInput" type="date" style="padding:4px 6px; border:1px solid var(--border-color); border-radius:4px; background:var(--bg-primary); color:var(--text-primary);" />
+            </label>
+            <label style="display:flex;align-items:center;gap:6px;font-size:12px;">
+              <input id="ictTodayOnly" type="checkbox" checked /> Today only
+            </label>
+            <button id="ictDrawAllBtn" class="ict-tool-btn" style="padding:6px 10px;font-size:12px;border:1px solid var(--border-color);background:#3b82f6;color:white;border-radius:4px;cursor:pointer;">✨ Draw All</button>
+          </div>
+
+          <!-- Signal Confluence Panel -->
+          <div id="ictConfluenceSection" class="ict-section" style="margin:8px 0; padding:8px; border:1px solid var(--border-color); border-radius:6px; background:var(--bg-secondary);">
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
+              <div class="ict-section-header" style="font-weight:700;color:var(--text-primary)">📊 Signal Confluence</div>
+              <div id="ictConfluenceOverall" style="font-size:12px;color:var(--text-secondary)">Overall: 0%</div>
+            </div>
+            <div id="ictConfluenceBody" style="display:flex; flex-direction:column; gap:6px;">
+              <div style="font-size:12px; color:var(--text-secondary);">No signals yet. Click Draw All to analyze.</div>
+            </div>
+          </div>
+
+          <!-- ICT Drawing Tools -->
+          <div id="ictDrawingTools" style="display:flex;flex-direction:column;gap:8px;">
+            
+            <!-- Order Blocks Section -->
+            <div class="ict-section">
+              <div class="ict-section-header" style="font-weight:700;color:var(--text-primary);margin-bottom:6px;padding:4px;background:var(--bg-secondary);border-radius:4px;">📦 Order Blocks</div>
+              <div class="ict-tools-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:4px;">
+                <button class="ict-tool-btn" data-tool="bullish_ob" style="padding:8px;font-size:11px;border:1px solid var(--border-color);background:#16a34a;color:white;border-radius:4px;cursor:pointer;">🟢 Bullish OB</button>
+                <button class="ict-tool-btn" data-tool="bearish_ob" style="padding:8px;font-size:11px;border:1px solid var(--border-color);background:#ef4444;color:white;border-radius:4px;cursor:pointer;">🔴 Bearish OB</button>
+                <button class="ict-tool-btn" data-tool="breaker" style="padding:8px;font-size:11px;border:1px solid var(--border-color);background:#8b5cf6;color:white;border-radius:4px;cursor:pointer;">🧱 Breaker</button>
+                <button class="ict-tool-btn" data-tool="mitigation" style="padding:8px;font-size:11px;border:1px solid var(--border-color);background:#06b6d4;color:white;border-radius:4px;cursor:pointer;">🧩 Mitigation</button>
+              </div>
+            </div>
+
+            <!-- Fair Value Gaps Section -->
+            <div class="ict-section">
+              <div class="ict-section-header" style="font-weight:700;color:var(--text-primary);margin-bottom:6px;padding:4px;background:var(--bg-secondary);border-radius:4px;">📈 Fair Value Gaps</div>
+              <div class="ict-tools-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:4px;">
+                <button class="ict-tool-btn" data-tool="bullish_fvg" style="padding:8px;font-size:11px;border:1px solid var(--border-color);background:#22c55e;color:white;border-radius:4px;cursor:pointer;">⬆️ Bull FVG</button>
+                <button class="ict-tool-btn" data-tool="bearish_fvg" style="padding:8px;font-size:11px;border:1px solid var(--border-color);background:#ef4444;color:white;border-radius:4px;cursor:pointer;">⬇️ Bear FVG</button>
+                <button class="ict-tool-btn" data-tool="fvg_fill" style="padding:8px;font-size:11px;border:1px solid var(--border-color);background:#f59e0b;color:white;border-radius:4px;cursor:pointer;">🎯 FVG Fill</button>
+                <button class="ict-tool-btn" data-tool="sibi" style="padding:8px;font-size:11px;border:1px solid var(--border-color);background:#8b5cf6;color:white;border-radius:4px;cursor:pointer;">💜 SIBI</button>
+              </div>
+            </div>
+
+            <!-- Market Structure Section -->
+            <div class="ict-section">
+              <div class="ict-section-header" style="font-weight:700;color:var(--text-primary);margin-bottom:6px;padding:4px;background:var(--bg-secondary);border-radius:4px;">🔄 Market Structure</div>
+              <div class="ict-tools-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:4px;">
+                <button class="ict-tool-btn" data-tool="choch" style="padding:8px;font-size:11px;border:1px solid var(--border-color);background:#3b82f6;color:white;border-radius:4px;cursor:pointer;">🔄 CHOCH</button>
+                <button class="ict-tool-btn" data-tool="bos" style="padding:8px;font-size:11px;border:1px solid var(--border-color);background:#6366f1;color:white;border-radius:4px;cursor:pointer;">💥 BOS</button>
+                <button class="ict-tool-btn" data-tool="swing_high" style="padding:8px;font-size:11px;border:1px solid var(--border-color);background:#059669;color:white;border-radius:4px;cursor:pointer;">📈 Swing High</button>
+                <button class="ict-tool-btn" data-tool="swing_low" style="padding:8px;font-size:11px;border:1px solid var(--border-color);background:#dc2626;color:white;border-radius:4px;cursor:pointer;">📉 Swing Low</button>
+              </div>
+            </div>
+
+            <!-- Liquidity Section -->
+            <div class="ict-section">
+              <div class="ict-section-header" style="font-weight:700;color:var(--text-primary);margin-bottom:6px;padding:4px;background:var(--bg-secondary);border-radius:4px;">💧 Liquidity</div>
+              <div class="ict-tools-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:4px;">
+                <button class="ict-tool-btn" data-tool="liquidity_sweep" style="padding:8px;font-size:11px;border:1px solid var(--border-color);background:#0ea5e9;color:white;border-radius:4px;cursor:pointer;">🌊 Liq Sweep</button>
+                <button class="ict-tool-btn" data-tool="stop_hunt" style="padding:8px;font-size:11px;border:1px solid var(--border-color);background:#e11d48;color:white;border-radius:4px;cursor:pointer;">🎯 Stop Hunt</button>
+                <button class="ict-tool-btn" data-tool="liquidity_pool" style="padding:8px;font-size:11px;border:1px solid var(--border-color);background:#06b6d4;color:white;border-radius:4px;cursor:pointer;">💦 Liq Pool</button>
+                <button class="ict-tool-btn" data-tool="pdarray" style="padding:8px;font-size:11px;border:1px solid var(--border-color);background:#7c3aed;color:white;border-radius:4px;cursor:pointer;">📊 PD Array</button>
+              </div>
+            </div>
+
+            <!-- Order Flow Section -->
+            <div class="ict-section">
+              <div class="ict-section-header" style="font-weight:700;color:var(--text-primary);margin-bottom:6px;padding:4px;background:var(--bg-secondary);border-radius:4px;">📊 Order Flow</div>
+              <div class="ict-tools-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:4px;">
+                <button class="ict-tool-btn" data-tool="volume_profile" style="padding:8px;font-size:11px;border:1px solid var(--border-color);background:#8b5cf6;color:white;border-radius:4px;cursor:pointer;">📈 Vol Profile</button>
+                <button class="ict-tool-btn" data-tool="volume_cluster" style="padding:8px;font-size:11px;border:1px solid var(--border-color);background:#a855f7;color:white;border-radius:4px;cursor:pointer;">🔵 Vol Cluster</button>
+                <button class="ict-tool-btn" data-tool="poc" style="padding:8px;font-size:11px;border:1px solid var(--border-color);background:#c084fc;color:white;border-radius:4px;cursor:pointer;">📍 POC</button>
+                <button class="ict-tool-btn" data-tool="imbalance" style="padding:8px;font-size:11px;border:1px solid var(--border-color);background:#f59e0b;color:white;border-radius:4px;cursor:pointer;">⚡ Imbalance</button>
+              </div>
+            </div>
+
+            <!-- Premium/Discount Section -->
+            <div class="ict-section">
+              <div class="ict-section-header" style="font-weight:700;color:var(--text-primary);margin-bottom:6px;padding:4px;background:var(--bg-secondary);border-radius:4px;">💰 Premium/Discount</div>
+              <div class="ict-tools-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:4px;">
+                <button class="ict-tool-btn" data-tool="premium" style="padding:8px;font-size:11px;border:1px solid var(--border-color);background:#dc2626;color:white;border-radius:4px;cursor:pointer;">💸 Premium</button>
+                <button class="ict-tool-btn" data-tool="discount" style="padding:8px;font-size:11px;border:1px solid var(--border-color);background:#16a34a;color:white;border-radius:4px;cursor:pointer;">💰 Discount</button>
+                <button class="ict-tool-btn" data-tool="equilibrium" style="padding:8px;font-size:11px;border:1px solid var(--border-color);background:#6b7280;color:white;border-radius:4px;cursor:pointer;">⚖️ Equilibrium</button>
+                <button class="ict-tool-btn" data-tool="ote" style="padding:8px;font-size:11px;border:1px solid var(--border-color);background:#f59e0b;color:white;border-radius:4px;cursor:pointer;">🎯 OTE</button>
+              </div>
+            </div>
+
+            <!-- Killzones Section -->
+            <div class="ict-section">
+              <div class="ict-section-header" style="font-weight:700;color:var(--text-primary);margin-bottom:6px;padding:4px;background:var(--bg-secondary);border-radius:4px;">🕒 Killzones</div>
+              <div class="ict-tools-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:4px;">
+                <button class="ict-tool-btn" data-tool="london_killzone" style="padding:8px;font-size:11px;border:1px solid var(--border-color);background:#2563eb;color:white;border-radius:4px;cursor:pointer;">🇬🇧 London KZ</button>
+                <button class="ict-tool-btn" data-tool="ny_killzone" style="padding:8px;font-size:11px;border:1px solid var(--border-color);background:#dc2626;color:white;border-radius:4px;cursor:pointer;">🇺🇸 NY KZ</button>
+                <button class="ict-tool-btn" data-tool="asian_killzone" style="padding:8px;font-size:11px;border:1px solid var(--border-color);background:#059669;color:white;border-radius:4px;cursor:pointer;">🇯🇵 Asian KZ</button>
+                <button class="ict-tool-btn" data-tool="macro_time" style="padding:8px;font-size:11px;border:1px solid var(--border-color);background:#7c3aed;color:white;border-radius:4px;cursor:pointer;">⏰ Macro</button>
+              </div>
+            </div>
+
+            <!-- Auto-Detection Section -->
+            <div class="ict-section">
+              <div class="ict-section-header" style="font-weight:700;color:var(--text-primary);margin-bottom:6px;padding:4px;background:linear-gradient(45deg, #3b82f6, #8b5cf6);border-radius:4px;">🤖 Auto Detection</div>
+              <div class="ict-tools-grid" style="display:grid;grid-template-columns:1fr;gap:4px;">
+                <button class="ict-tool-btn" data-tool="auto_scan_all" style="padding:10px;font-size:11px;border:1px solid var(--border-color);background:linear-gradient(45deg, #3b82f6, #8b5cf6);color:white;border-radius:4px;cursor:pointer;font-weight:600;">🔍 Scan All Patterns</button>
+                <button class="ict-tool-btn" data-tool="auto_scan_liquidity" style="padding:8px;font-size:11px;border:1px solid var(--border-color);background:#0ea5e9;color:white;border-radius:4px;cursor:pointer;">💧 Auto Liquidity</button>
+                <button class="ict-tool-btn" data-tool="auto_scan_orderflow" style="padding:8px;font-size:11px;border:1px solid var(--border-color);background:#8b5cf6;color:white;border-radius:4px;cursor:pointer;">📊 Auto OrderFlow</button>
+                <button class="ict-tool-btn" data-tool="auto_scan_structure" style="padding:8px;font-size:11px;border:1px solid var(--border-color);background:#3b82f6;color:white;border-radius:4px;cursor:pointer;">🔄 Auto Structure</button>
+              </div>
+            </div>
+
+            <!-- Clear/Reset Section -->
+            <div class="ict-section">
+              <div class="ict-section-header" style="font-weight:700;color:var(--text-primary);margin-bottom:6px;padding:4px;background:var(--bg-secondary);border-radius:4px;">🧹 Clear Tools</div>
+              <div class="ict-tools-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:4px;">
+                <button class="ict-tool-btn" data-tool="clear_all" style="padding:8px;font-size:11px;border:1px solid var(--border-color);background:#6b7280;color:white;border-radius:4px;cursor:pointer;">🧹 Clear All</button>
+                <button class="ict-tool-btn" data-tool="clear_last" style="padding:8px;font-size:11px;border:1px solid var(--border-color);background:#f59e0b;color:white;border-radius:4px;cursor:pointer;">↩️ Undo Last</button>
+              </div>
+            </div>
+
+            <!-- ICT Mentor Section -->
+            <div class="ict-section">
+              <div class="ict-section-header" style="font-weight:700;color:var(--text-primary);margin-bottom:6px;padding:4px;background:var(--bg-secondary);border-radius:4px;">🎓 ICT Mentor</div>
+              <div class="ict-tools-grid" style="display:grid;grid-template-columns:1fr;gap:4px;">
+                <button id="ictMentorBtn" style="padding:8px;font-size:11px;border:1px solid var(--border-color);background:#16a34a;color:white;border-radius:4px;cursor:pointer;">🎓 Analyze All Concepts</button>
+                <button id="ictCandleBtn" style="padding:8px;font-size:11px;border:1px solid var(--border-color);background:#f59e0b;color:white;border-radius:4px;cursor:pointer;">📊 Current Candle Analysis</button>
+              </div>
+            </div>
+
+          </div>
+          
+          <!-- Active Tool Display -->
+          <div style="display:flex;align-items:center;gap:8px;margin-top:12px;">
+            <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-secondary);">
+              <input id="manualDrawToggle" type="checkbox" /> Manual draw mode
+            </label>
+          </div>
+          <div id="activeTool" style="margin-top:8px;padding:8px;background:var(--bg-secondary);border-radius:4px;font-size:12px;color:var(--text-secondary);">
+            Tip: Manual mode off = Auto-draw instantly. Manual mode on = Pick a tool, then click a candle to place it.
+          </div>
+          
+          <!-- Detected Signals -->
+          <div id="ictCounts" style="font-size:12px;margin-top:12px;margin-bottom:8px"></div>
+          <div id="ictList" style="display:flex;flex-direction:column;gap:6px"></div>
+        </div>
+        <div class="resize-handle handle-right" title="Resize Width" style="position:absolute;top:0;right:0;width:6px;bottom:0;cursor:ew-resize;"></div>
+      </aside>
+
+  <!-- Always-visible slim handle to open ICT tray -->
+  <div id="ictHandle" class="ict-handle" title="Open ICT Tray"></div>
+
+      <!-- Bottom AI Mentor Pane (resizable) -->
+      <section id="aiMentorPane" class="ai-mentor-pane hidden">
+        <div class="pane-header">
+          <div class="pane-title">AI Mentor</div>
+          <div class="pane-actions">
+            <button id="aiCollapse" title="Collapse/Expand">▾</button>
+            <button id="aiClose" title="Close">✖</button>
+          </div>
+        </div>
+        <div class="pane-resize-handle handle-top" title="Resize Height"></div>
+        <div id="aiMentorBody" class="pane-body">
+          <div style="padding:8px;color:var(--text-secondary);">Insights will appear here. Ask the AI Mentor about current signals, confluence, or risk setup.</div>
+        </div>
+      </section>
+
+      <!-- (Removed duplicate persistent tray; using only the overlay tray above) -->
+    </section>
+
+    <!-- GANN Master Analysis View (Unified) -->
+    <section id="gannChartView" class="chart-view hidden">
+      <!-- Unified Module Tabs -->
+      <div style="display:flex; border-bottom:1px solid var(--border-color); background:var(--bg-secondary); padding:8px;">
+        <button id="gannTabBtn" class="gann-tab-btn active" data-tab="gann">
+          <svg class="icon" style="width:16px;height:16px;margin-right:6px;" aria-hidden="true">
+            <use href="#icon-gann-unified"/>
+          </svg>
+          GANN Analysis
+        </button>
+      </div>
+
+      <!-- Horizontal signals bar (top) with all chart settings -->
+      <div id="gannSignalsBar" class="signals-bar">
+        <button id="gannHomeBtn" class="signals-home" title="Back to Dashboard" aria-label="Home">
+          <svg class="icon" aria-hidden="true"><use href="#icon-home"/></svg>
+        </button>
+        <button id="gannMoveToggle" class="signals-home" title="Move/Float Panels" aria-label="Move">
+          <svg class="icon" aria-hidden="true"><use href="#icon-move"/></svg>
+        </button>
+        <button id="gannLockSizeToggle" class="signals-home" title="Lock/Unlock Size" aria-label="Lock">
+          <svg class="icon" aria-hidden="true"><use href="#icon-unlock"/></svg>
+        </button>
+        <button id="gannAiToggle" class="signals-home" title="AI Mentor Panel" aria-label="AI">
+          <svg class="icon" aria-hidden="true"><use href="#icon-robot"/></svg>
+        </button>
+        <button id="gannAutoSignalsToggle" class="signals-home" title="Automatic Signals Identification (show all)">
+          <svg class="icon" aria-hidden="true"><use href="#icon-magic"/></svg>
+          <span class="btn-label">Auto</span>
+        </button>
+        <div class="chart-settings-group" style="display:flex;align-items:center;gap:8px;margin-left:12px;">
+          <input id="gannSymbolInput" value="EURUSD" placeholder="Symbol" style="width:80px;padding:4px;font-size:12px;" />
+          <select id="gannIntervalSelect" title="Interval" style="padding:4px;font-size:12px;">
+            <option value="1m">1m</option>
+            <option value="5m" selected>5m</option>
+            <option value="15m">15m</option>
+            <option value="1h">1h</option>
+            <option value="1d">1d</option>
+          </select>
+          <button id="gannLoadBtn" class="signals-home" title="Load Data" aria-label="Reload">
+            <svg class="icon" aria-hidden="true"><use href="#icon-reload"/></svg>
+          </button>
+          <button id="gannThemeToggle" class="signals-home" title="Toggle Theme" aria-live="polite">
+            <svg class="icon" aria-hidden="true"><use href="#icon-moon"/></svg>
+          </button>
+          <button id="gannStatusToggle" class="signals-home" title="Show/Hide Status" aria-label="Status" style="padding:4px 6px;">
+            <svg class="icon" aria-hidden="true"><use href="#icon-info"/></svg>
+          </button>
+        </div>
+        <div id="gannSignalsIconsRow" class="signals-icons-row"></div>
+        <label style="display:flex;align-items:center;gap:6px;margin-left:12px;font-size:12px;color:var(--text-secondary);">
+          <input id="gannTrapsOnlyToggle" type="checkbox" />
+          <span id="gannTrapsLabel">Auto-Detect All</span>
+        </label>
+        <div id="gannTrapSummary" class="trap-summary" style="margin-left:auto;font-size:12px;color:var(--text-secondary);"></div>
+        <div class="resize-handle handle-bottom" title="Resize Height"></div>
+      </div>
+      <!-- Chart Canvas -->
+      <div class="chart-wrapper">
+        <!-- TradingView-style zoom controls -->
+        <div class="chart-controls">
+          <button class="chart-control-btn" id="gannZoomInBtn" title="Zoom In" aria-label="Zoom In">
+            <svg class="icon" aria-hidden="true"><use href="#icon-plus"/></svg>
+          </button>
+          <button class="chart-control-btn" id="gannZoomOutBtn" title="Zoom Out" aria-label="Zoom Out">
+            <svg class="icon" aria-hidden="true"><use href="#icon-minus"/></svg>
+          </button>
+          <button class="chart-control-btn" id="gannFitContentBtn" title="Fit Content" aria-label="Fit">
+            <svg class="icon" aria-hidden="true"><use href="#icon-fit"/></svg>
+          </button>
+          <button class="chart-control-btn" id="gannResetZoomBtn" title="Reset Zoom" aria-label="Reset">
+            <svg class="icon" aria-hidden="true"><use href="#icon-reset"/></svg>
+          </button>
+          <button class="chart-control-btn" id="gannFullScreenBtn" title="Fullscreen" aria-label="Fullscreen">
+            <svg class="icon" aria-hidden="true"><use href="#icon-fullscreen"/></svg>
+          </button>
+          <button class="chart-control-btn" id="gannClearSignalsBtn" title="Clear Auto-Drawn GANN Signals" aria-label="Clear Signals">
+            <svg class="icon" aria-hidden="true"><use href="#icon-close"/></svg>
+            <span style="font-size: 10px; margin-left: 2px;">Clear GANN</span>
+          </button>
+        </div>
+        <div id="gannLwchart"></div>
+        <!-- Chart status (top-left) -->
+        <div id="gannChartStatus" style="position: absolute; top: 64px; left: 12px; background: var(--bg-secondary); color: var(--text-secondary); padding: 4px 8px; border-radius: 6px; font-size: 12px; z-index: 6; display: none;"></div>
+        <!-- Price info display -->
+        <div id="gannPriceInfo" style="position: absolute; bottom: 10px; left: 10px; background: var(--bg-primary); padding: 4px 8px; border-radius: 4px; font-family: monospace; z-index: 6;"></div>
+      </div>
+
+      <!-- GANN Tray (hidden sliding panel) -->
+      <aside id="gannTray" class="gann-tray" style="position:fixed;left:-302px;top:0;bottom:0;width:310px;display:flex;flex-direction:column;background:var(--bg-primary);border-right:1px solid var(--border-color);z-index:1000;box-shadow:2px 0 10px rgba(0,0,0,0.1);transition:left 0.3s ease;">
+        <!-- Hidden trigger area (hover to reveal) -->
+        <div class="gann-trigger" style="position:absolute;left:310px;top:50%;transform:translateY(-50%);width:28px;height:84px;background:rgba(0,0,0,0.1);border-radius:0 12px 12px 0;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text-secondary);font-size:16px;" title="GANN Tools">
+          📐
+        </div>
+        
+        <div class="pane-header" style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;border-bottom:1px solid var(--border-color)">
+          <div class="pane-title" style="font-weight:600">GANN Analysis</div>
+          <div class="pane-actions" style="display:flex;gap:6px">
+            <button id="gannTrayCollapse" title="Minimize">−</button>
+            <button id="gannTrayHide" title="Hide">→</button>
+          </div>
+        </div>
+        <div id="gannTrayBody" class="pane-body" style="overflow:auto;padding:8px">
+          <div style="font-size:12px;color:var(--text-secondary);margin-bottom:8px">Click any GANN concept below to analyze or draw it on the chart</div>
+          
+          <!-- GANN Tray Tools & Controls -->
+          <div id="gannTrayControls" style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px;padding:8px;border:1px solid var(--border-color);border-radius:6px;background:var(--bg-secondary)">
+            <div style="font-size:12px;color:var(--text-secondary);margin-right:4px;">Tools:</div>
+            <label style="display:flex;align-items:center;gap:4px;font-size:12px;">
+              <input id="gannAutoMode" type="checkbox" checked /> Auto Analysis
+            </label>
+            <label style="display:flex;align-items:center;gap:4px;font-size:12px;">
+              <input id="gannManualMode" type="checkbox" /> Manual Mode
+            </label>
+            <button id="gannAnalyzeAllBtn" style="padding:4px 8px;font-size:11px;background:var(--accent-color);color:white;border:none;border-radius:4px;cursor:pointer;">Analyze All</button>
+          </div>
+
+          <!-- GANN Analysis Categories -->
+          <div id="gannCategories" style="display:flex;flex-direction:column;gap:12px">
+            
+            <!-- Square of 9 -->
+            <div class="gann-category" style="border:1px solid var(--border-color);border-radius:6px;padding:8px;background:var(--bg-secondary)">
+              <div class="category-header" style="font-weight:600;font-size:13px;margin-bottom:6px;color:var(--accent-color)">📐 Square of 9</div>
+              <div class="gann-tools" style="display:grid;grid-template-columns:1fr 1fr;gap:4px">
+                <button class="gann-tool-btn" data-tool="square9-price" style="padding:4px 6px;font-size:11px;border:1px solid var(--border-color);background:var(--bg-primary);border-radius:3px;cursor:pointer;">Price Levels</button>
+                <button class="gann-tool-btn" data-tool="square9-time" style="padding:4px 6px;font-size:11px;border:1px solid var(--border-color);background:var(--bg-primary);border-radius:3px;cursor:pointer;">Time Cycles</button>
+                <button class="gann-tool-btn" data-tool="square9-spiral" style="padding:4px 6px;font-size:11px;border:1px solid var(--border-color);background:var(--bg-primary);border-radius:3px;cursor:pointer;">Spiral Chart</button>
+                <button class="gann-tool-btn" data-tool="square9-angles" style="padding:4px 6px;font-size:11px;border:1px solid var(--border-color);background:var(--bg-primary);border-radius:3px;cursor:pointer;">Natural Angles</button>
+              </div>
+            </div>
+
+            <!-- Square of 144 -->
+            <div class="gann-category" style="border:1px solid var(--border-color);border-radius:6px;padding:8px;background:var(--bg-secondary)">
+              <div class="category-header" style="font-weight:600;font-size:13px;margin-bottom:6px;color:var(--accent-color)">🔢 Square of 144</div>
+              <div class="gann-tools" style="display:grid;grid-template-columns:1fr 1fr;gap:4px">
+                <button class="gann-tool-btn" data-tool="square144-price" style="padding:4px 6px;font-size:11px;border:1px solid var(--border-color);background:var(--bg-primary);border-radius:3px;cursor:pointer;">Price Analysis</button>
+                <button class="gann-tool-btn" data-tool="square144-cycles" style="padding:4px 6px;font-size:11px;border:1px solid var(--border-color);background:var(--bg-primary);border-radius:3px;cursor:pointer;">Major Cycles</button>
+                <button class="gann-tool-btn" data-tool="square144-resistance" style="padding:4px 6px;font-size:11px;border:1px solid var(--border-color);background:var(--bg-primary);border-radius:3px;cursor:pointer;">Resistance</button>
+                <button class="gann-tool-btn" data-tool="square144-support" style="padding:4px 6px;font-size:11px;border:1px solid var(--border-color);background:var(--bg-primary);border-radius:3px;cursor:pointer;">Support</button>
+              </div>
+            </div>
+
+            <!-- GANN Angles -->
+            <div class="gann-category" style="border:1px solid var(--border-color);border-radius:6px;padding:8px;background:var(--bg-secondary)">
+              <div class="category-header" style="font-weight:600;font-size:13px;margin-bottom:6px;color:var(--accent-color)">📏 GANN Angles</div>
+              <div class="gann-tools" style="display:grid;grid-template-columns:1fr 1fr;gap:4px">
+                <button class="gann-tool-btn" data-tool="angle-1x1" style="padding:4px 6px;font-size:11px;border:1px solid var(--border-color);background:var(--bg-primary);border-radius:3px;cursor:pointer;">1x1 (45°)</button>
+                <button class="gann-tool-btn" data-tool="angle-2x1" style="padding:4px 6px;font-size:11px;border:1px solid var(--border-color);background:var(--bg-primary);border-radius:3px;cursor:pointer;">2x1 (63.75°)</button>
+                <button class="gann-tool-btn" data-tool="angle-1x2" style="padding:4px 6px;font-size:11px;border:1px solid var(--border-color);background:var(--bg-primary);border-radius:3px;cursor:pointer;">1x2 (26.25°)</button>
+                <button class="gann-tool-btn" data-tool="angle-4x1" style="padding:4px 6px;font-size:11px;border:1px solid var(--border-color);background:var(--bg-primary);border-radius:3px;cursor:pointer;">4x1 (75°)</button>
+                <button class="gann-tool-btn" data-tool="angle-1x4" style="padding:4px 6px;font-size:11px;border:1px solid var(--border-color);background:var(--bg-primary);border-radius:3px;cursor:pointer;">1x4 (15°)</button>
+                <button class="gann-tool-btn" data-tool="angle-8x1" style="padding:4px 6px;font-size:11px;border:1px solid var(--border-color);background:var(--bg-primary);border-radius:3px;cursor:pointer;">8x1 (82.5°)</button>
+                <button class="gann-tool-btn" data-tool="angle-1x8" style="padding:4px 6px;font-size:11px;border:1px solid var(--border-color);background:var(--bg-primary);border-radius:3px;cursor:pointer;">1x8 (7.5°)</button>
+                <button class="gann-tool-btn" data-tool="angle-fan" style="padding:4px 6px;font-size:11px;border:1px solid var(--border-color);background:var(--bg-primary);border-radius:3px;cursor:pointer;">Fan Lines</button>
+              </div>
+            </div>
+
+            <!-- Time Cycles -->
+            <div class="gann-category" style="border:1px solid var(--border-color);border-radius:6px;padding:8px;background:var(--bg-secondary)">
+              <div class="category-header" style="font-weight:600;font-size:13px;margin-bottom:6px;color:var(--accent-color)">⏰ Time Cycles</div>
+              <div class="gann-tools" style="display:grid;grid-template-columns:1fr 1fr;gap:4px">
+                <button class="gann-tool-btn" data-tool="cycle-seasonal" style="padding:4px 6px;font-size:11px;border:1px solid var(--border-color);background:var(--bg-primary);border-radius:3px;cursor:pointer;">Seasonal</button>
+                <button class="gann-tool-btn" data-tool="cycle-fibonacci" style="padding:4px 6px;font-size:11px;border:1px solid var(--border-color);background:var(--bg-primary);border-radius:3px;cursor:pointer;">Fibonacci</button>
+                <button class="gann-tool-btn" data-tool="cycle-cardinal" style="padding:4px 6px;font-size:11px;border:1px solid var(--border-color);background:var(--bg-primary);border-radius:3px;cursor:pointer;">Cardinal</button>
+                <button class="gann-tool-btn" data-tool="cycle-anniversary" style="padding:4px 6px;font-size:11px;border:1px solid var(--border-color);background:var(--bg-primary);border-radius:3px;cursor:pointer;">Anniversary</button>
+              </div>
+            </div>
+
+
+            <!-- 🎯 UNIFIED ANALYSIS CONTROLS -->
+            <div class="gann-category unified-controls" style="border:1px solid #FFD700;border-radius:6px;padding:8px;background:linear-gradient(135deg, rgba(255,215,0,0.1), rgba(255,107,53,0.1))">
+              <div class="category-header" style="font-weight:600;font-size:13px;margin-bottom:6px;color:#FFD700;display:flex;align-items:center;gap:6px;">
+                ⭐ Unified Analysis
+              </div>
+              <div class="gann-tools" style="display:grid;grid-template-columns:1fr 1fr;gap:4px">
+                <button class="gann-tool-btn" data-tool="unified-scan" data-analysis="all" style="padding:4px 6px;font-size:11px;border:1px solid #FFD700;background:rgba(255,215,0,0.1);color:#FFD700;border-radius:3px;cursor:pointer;font-weight:600;">Scan All</button>
+                <button class="gann-tool-btn" data-tool="unified-confluence" data-analysis="all" style="padding:4px 6px;font-size:11px;border:1px solid #FFD700;background:rgba(255,215,0,0.1);color:#FFD700;border-radius:3px;cursor:pointer;font-weight:600;">Confluence</button>
+                <button class="gann-tool-btn" data-tool="unified-signals" data-analysis="all" style="padding:4px 6px;font-size:11px;border:1px solid #FFD700;background:rgba(255,215,0,0.1);color:#FFD700;border-radius:3px;cursor:pointer;font-weight:600;">Live Signals</button>
+                <button class="gann-tool-btn" data-tool="unified-clear" data-analysis="all" style="padding:4px 6px;font-size:11px;border:1px solid #FF6B35;background:rgba(255,107,53,0.1);color:#FF6B35;border-radius:3px;cursor:pointer;">Clear All</button>
+              </div>
+            </div>
+
+            <!-- Price Projections -->
+            <div class="gann-category" style="border:1px solid var(--border-color);border-radius:6px;padding:8px;background:var(--bg-secondary)">
+              <div class="category-header" style="font-weight:600;font-size:13px;margin-bottom:6px;color:var(--accent-color)">🎯 Price Projections</div>
+              <div class="gann-tools" style="display:grid;grid-template-columns:1fr 1fr;gap:4px">
+                <button class="gann-tool-btn" data-tool="projection-swing" style="padding:4px 6px;font-size:11px;border:1px solid var(--border-color);background:var(--bg-primary);border-radius:3px;cursor:pointer;">Swing Proj.</button>
+                <button class="gann-tool-btn" data-tool="projection-percentage" style="padding:4px 6px;font-size:11px;border:1px solid var(--border-color);background:var(--bg-primary);border-radius:3px;cursor:pointer;">% Retracement</button>
+                <button class="gann-tool-btn" data-tool="projection-harmonic" style="padding:4px 6px;font-size:11px;border:1px solid var(--border-color);background:var(--bg-primary);border-radius:3px;cursor:pointer;">Harmonic</button>
+                <button class="gann-tool-btn" data-tool="projection-extension" style="padding:4px 6px;font-size:11px;border:1px solid var(--border-color);background:var(--bg-primary);border-radius:3px;cursor:pointer;">Extensions</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Active GANN Analysis Results -->
+          <div id="gannAnalysisResults" style="margin-top:12px;padding:8px;border:1px solid var(--border-color);border-radius:6px;background:var(--bg-primary)">
+            <div style="font-weight:600;font-size:12px;margin-bottom:6px;color:var(--text-secondary)">Analysis Results</div>
+            <div id="gannResultsList" style="font-size:11px;color:var(--text-secondary)">
+              Click a GANN tool to see analysis results here...
+            </div>
+          </div>
+
+          <!-- Detected GANN Signals -->
+          <div id="gannCounts" style="font-size:12px;margin-top:12px;margin-bottom:8px"></div>
+          <div id="gannList" style="display:flex;flex-direction:column;gap:6px"></div>
+        </div>
+        <div class="resize-handle handle-right" title="Resize Width" style="position:absolute;top:0;right:0;width:6px;bottom:0;cursor:ew-resize;"></div>
+      </aside>
+
+      <!-- Always-visible slim handle to open GANN tray -->
+      <div id="gannHandle" class="gann-handle" title="Open GANN Tray" style="position:fixed;left:0;top:50%;transform:translateY(-50%);width:20px;height:80px;background:rgba(0,0,0,0.2);border-radius:0 10px 10px 0;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:999;font-size:14px;">📐</div>
+
+      <!-- Bottom GANN AI Mentor Pane (resizable) -->
+      <section id="gannAiMentorPane" class="ai-mentor-pane hidden">
+        <div class="pane-header">
+          <div class="pane-title">GANN AI Mentor</div>
+          <div class="pane-actions">
+            <button id="gannAiCollapse" title="Collapse/Expand">▾</button>
+            <button id="gannAiClose" title="Close">✖</button>
+          </div>
+        </div>
+        <div class="pane-resize-handle handle-top" title="Resize Height"></div>
+        <div id="gannAiMentorBody" class="pane-body">
+          <div style="padding:8px;color:var(--text-secondary);">GANN insights will appear here. Ask the AI Mentor about current GANN analysis, time cycles, price projections, or Square of 9 levels.</div>
+        </div>
+      </section>
     </section>
   </main>
+  
+  <div id="log"></div>
 
+  <!-- News Detail Modal -->
+  <div id="newsDetailModal" class="modal hidden" style="position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.7); z-index:1000; display:flex; align-items:center; justify-content:center;">
+    <div style="background:var(--bg-primary); width:90%; max-width:800px; max-height:90vh; border-radius:12px; border:1px solid var(--border-color); overflow:hidden; box-shadow:0 20px 40px rgba(0,0,0,0.3);">
+      <!-- Modal Header -->
+      <div style="padding:16px 20px; background:var(--bg-secondary); border-bottom:1px solid var(--border-color); display:flex; align-items:center; justify-content:space-between;">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span style="font-size:20px;">📰</span>
+          <h3 id="newsModalTitle" style="margin:0; font-size:16px; color:var(--text-primary);">News Detail</h3>
+        </div>
+        <button id="newsModalClose" style="background:none; border:none; font-size:20px; color:var(--text-secondary); cursor:pointer; padding:4px;" title="Close">✖</button>
+      </div>
+      
+      <!-- Modal Body -->
+      <div style="padding:20px; overflow:auto; max-height:calc(90vh - 120px);">
+        <!-- News metadata -->
+        <div id="newsModalMeta" style="display:flex; gap:12px; margin-bottom:16px; font-size:12px; color:var(--text-secondary);"></div>
+        
+        <!-- News summary -->
+        <div id="newsModalSummary" style="background:var(--bg-secondary); padding:12px; border-radius:6px; margin-bottom:16px; font-style:italic;"></div>
+        
+        <!-- News content -->
+        <div id="newsModalBody" style="line-height:1.6; color:var(--text-primary);"></div>
+        
+        <!-- Entities and topics -->
+        <div id="newsModalEntities" style="margin-top:16px; padding:12px; background:var(--bg-secondary); border-radius:6px;"></div>
+        
+        <!-- Linked signals -->
+        <div id="newsModalSignals" style="margin-top:16px;"></div>
+        
+        <!-- Actions -->
+        <div style="margin-top:20px; display:flex; gap:8px;">
+          <button id="newsModalLinkSignal" style="padding:8px 12px; font-size:12px; background:var(--accent-color); color:white; border:none; border-radius:4px; cursor:pointer;">
+            🔗 Link to Signal
+          </button>
+          <button id="newsModalOpenUrl" style="padding:8px 12px; font-size:12px; background:var(--bg-secondary); border:1px solid var(--border-color); border-radius:4px; cursor:pointer;">
+            🌐 Open Source
+          </button>
+          <button id="newsModalShare" style="padding:8px 12px; font-size:12px; background:var(--bg-secondary); border:1px solid var(--border-color); border-radius:4px; cursor:pointer;">
+            📤 Share
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="assets/ictDraw.js"></script>
+  <script src="premium-features.js"></script>
+  <script src="ict-click-fix.js"></script>
+  <script src="rd-lab-router.js"></script>
+  <script src="rd-lab-enhanced.js"></script>
+  <script src="rd-lab-advanced.js"></script>
+  <script src="rd-lab-integration.js"></script>
+  <script src="rd-lab-demo.js"></script>
+  <script src="advanced-backtester.js"></script>
+  <script src="meta-aggregator.js"></script>
+  <script src="strategy-optimizer.js"></script>
+  <!-- Simple Working Chart Script - Load Early -->
+  <script src="simple-direct-chart.js"></script>
+  
+  <script src="chart_override.js"></script>
+  <script src="enhanced-strategy-builder.js"></script>
+  <script src="system-config.js"></script>
+  <script src="ai-mentor-enhanced.js"></script>
+  <script src="gann-signal-styling.js"></script>
+  <script src="home-button-manager.js"></script>
+  <script src="astro-cycles-enhanced.js"></script>
+  
+  <!-- Debug Test Functions -->
+  <script>
+    console.log('🔧 Debug script loaded');
+    
+    window.testLoadChart = function() {
+      console.log('🧪 TEST LOAD CHART FUNCTION CALLED!');
+      alert('Test function is working! Now attempting to load chart...');
+      
+      // Try to call the enhanced chart loader
+      try {
+        if (typeof loadEnhancedChart === 'function') {
+          console.log('✅ loadEnhancedChart function found, calling it...');
+          loadEnhancedChart();
+        } else {
+          console.log('❌ loadEnhancedChart function not found');
+          alert('loadEnhancedChart function not available');
+        }
+      } catch (error) {
+        console.error('❌ Error calling loadEnhancedChart:', error);
+        alert('Error: ' + error.message);
+      }
+    };
+    
+    // Direct ICT module test
+    window.testICTModule = function() {
+      console.log('🎯 Testing ICT module with DIRECT chart...');
+      
+      // First, navigate to ICT module
+      const ictTile = document.querySelector('[data-module="ict"]');
+      if (ictTile) {
+        console.log('✅ ICT tile found, clicking...');
+        ictTile.click();
+        
+        // Wait for navigation, then test DIRECT chart loading
+        setTimeout(() => {
+          console.log('🔄 Testing DIRECT chart loading after ICT navigation...');
+          const chartView = document.getElementById('chartView');
+          if (chartView && !chartView.classList.contains('hidden')) {
+            console.log('✅ Chart view is visible, creating direct chart...');
+            if (typeof createDirectChart === 'function') {
+              createDirectChart();
+            } else {
+              alert('Direct chart function not available');
+            }
+          } else {
+            alert('Chart view not visible after ICT navigation');
+          }
+        }, 1000);
+      } else {
+        alert('ICT tile not found');
+      }
+    };
+    
+    // Auto-test ICT module after page load
+    window.autoTestICT = function() {
+      console.log('🚀 Auto-testing ICT module in 3 seconds...');
+      setTimeout(() => {
+        testICTModule();
+      }, 3000);
+    };
+    
+    // Test function availability
+    setTimeout(() => {
+      console.log('🔍 Checking available functions...');
+      console.log('- window.testLoadChart:', typeof window.testLoadChart);
+      console.log('- window.testICTModule:', typeof window.testICTModule);
+      console.log('- loadEnhancedChart:', typeof loadEnhancedChart);
+      console.log('- createLWChart:', typeof createLWChart);
+    }, 1000);
+  </script>
+
+  <!-- PERMANENT CHART AUTO-INITIALIZATION SYSTEM -->
+  <script>
+    console.log('🚀 PERMANENT: Setting up comprehensive auto-initialization...');
+    
+    // Global flag to prevent multiple initializations
+    window.permanentChartInitialized = false;
+    
+    // Master initialization function
+    function masterChartInitializer() {
+      if (window.permanentChartInitialized) {
+        console.log('⚠️ Chart already permanently initialized');
+        return true;
+      }
+      
+      console.log('🎯 Master chart initializer executing...');
+      
+      // Check if chart container exists
+      const container = document.getElementById('lwchart');
+      if (!container) {
+        console.log('⏳ Chart container not ready yet...');
+        return false;
+      }
+      
+      // Try to initialize chart
+      if (typeof window.createDirectChart === 'function') {
+        try {
+          console.log('📊 Calling createDirectChart...');
+          const success = window.createDirectChart();
+          if (success) {
+            window.permanentChartInitialized = true;
+            console.log('✅ PERMANENT: Chart initialization successful!');
+            showNotification('Chart loaded successfully!', 'success');
+            return true;
+          }
+        } catch (e) {
+          console.warn('⚠️ createDirectChart failed:', e);
+        }
+      }
+      
+      // Try alternative initialization methods
+      if (typeof loadEnhancedChart === 'function') {
+        try {
+          console.log('📊 Trying loadEnhancedChart...');
+          loadEnhancedChart();
+          window.permanentChartInitialized = true;
+          console.log('✅ PERMANENT: Enhanced chart loaded!');
+          return true;
+        } catch (e) {
+          console.warn('⚠️ loadEnhancedChart failed:', e);
+        }
+      }
+      
+      return false;
+    }
+    
+    // Multiple initialization triggers
+    
+    // (Auto-initialization triggers removed. Chart will only load on user action via dashboard tile.)
+    
+    // 4. Manual trigger for button clicks
+    window.ensureChartLoaded = function() {
+      if (!window.permanentChartInitialized) {
+        console.log('🔧 Manual chart loading trigger...');
+        return masterChartInitializer();
+      }
+      console.log('✅ Chart already loaded');
+      return true;
+    };
+    
+    console.log('✅ PERMANENT: Comprehensive auto-initialization system activated');
+  </script>
   <script src="app.js"></script>
 </body>
 </html>

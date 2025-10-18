@@ -24,11 +24,11 @@
     const pada = Math.floor((degInNak / (360/27)) * 4) + 1; // 1..4
 
     document.getElementById('planetName').textContent = planet;
-    document.getElementById('rashi').textContent = `${RASHI[rashiIndex]} (${rashiIndex})`;
+    document.getElementById('rashi').textContent = `${RASHI[rashiIndex]} — sign #${rashiIndex+1}`;
     document.getElementById('degRemainder').textContent = `${degInSign}° into sign`;
-    document.getElementById('nak').textContent = `${NAK[nakIndex]} (${nakIndex+1}/27)`;
+    document.getElementById('nak').textContent = `${NAK[nakIndex]} — nakshatra ${nakIndex+1}/27`;
     document.getElementById('pada').textContent = `Pada: ${pada}`;
-    document.getElementById('notes').textContent = `Longitude: ${lon360}°`;
+    document.getElementById('notes').textContent = `Longitude (geocentric): ${lon360}°`;
     const tel = TELUGU[planet] || '';
     if (tel) { document.getElementById('teluguName').textContent = tel; document.getElementById('teluguName').style.display = 'inline-block'; }
   }
@@ -54,17 +54,28 @@
         const key = Object.keys(pos).find(k => k.toLowerCase() === planet.toLowerCase());
         if (key) lon = pos[key].longitude_geocentric ?? pos[key].longitude ?? pos[key];
         // AI note
-        if (ep.ai_mentor && ep.ai_mentor.per_planet && ep.ai_mentor.per_planet[planet]) {
-          const note = ep.ai_mentor.per_planet[planet];
-          const el = document.getElementById('aiNote'); if (el) { el.style.display = 'block'; el.textContent = note; }
+        // Prefer per_planet notes but also support top-level ai_mentor.note
+        const el = document.getElementById('aiNote');
+        if (ep.ai_mentor) {
+          if (ep.ai_mentor.per_planet && ep.ai_mentor.per_planet[planet]) {
+            el.textContent = ep.ai_mentor.per_planet[planet];
+            document.getElementById('aiWrap').style.display = 'block';
+          } else if (ep.ai_mentor.note) {
+            el.textContent = ep.ai_mentor.note;
+            document.getElementById('aiWrap').style.display = 'block';
+          }
         }
       }
     } else {
       // If we have lon param, also try to fetch ai_mentor for same-date if present
       const ep = await fetchEphemeris(dateParam);
-      if (ep && ep.ai_mentor && ep.ai_mentor.per_planet && ep.ai_mentor.per_planet[planet]) {
-        const note = ep.ai_mentor.per_planet[planet];
-        const el = document.getElementById('aiNote'); if (el) { el.style.display = 'block'; el.textContent = note; }
+      const el = document.getElementById('aiNote');
+      if (ep && ep.ai_mentor) {
+        if (ep.ai_mentor.per_planet && ep.ai_mentor.per_planet[planet]) {
+          el.textContent = ep.ai_mentor.per_planet[planet]; document.getElementById('aiWrap').style.display = 'block';
+        } else if (ep.ai_mentor.note) {
+          el.textContent = ep.ai_mentor.note; document.getElementById('aiWrap').style.display = 'block';
+        }
       }
     }
 
@@ -77,13 +88,27 @@
     try { document.getElementById('planetGlyph').textContent = glyphs[planet] || planet.charAt(0); } catch(_){}
 
     // share button
+    // populate permalink input
+    const permin = document.getElementById('permalink');
+    try { permin.value = window.location.href; } catch(e) { /* ignore */ }
+
     document.getElementById('shareBtn').addEventListener('click', async ()=>{
+      const url = permin && permin.value ? permin.value : window.location.href;
+      // try clipboard API first
       try {
-        const url = window.location.href;
         await navigator.clipboard.writeText(url);
-        const b = document.getElementById('shareBtn'); b.textContent = 'Copied'; setTimeout(()=>{ b.textContent = 'Copy Link'; },1500);
+        const b = document.getElementById('shareBtn'); b.textContent = 'Copied'; setTimeout(()=>{ b.textContent = 'Copy'; },1500);
+        return;
       } catch (e) {
-        alert('Copy failed: ' + e.message);
+        // fallback: select input and execCommand
+        try {
+          permin.select(); permin.setSelectionRange(0, 99999);
+          document.execCommand('copy');
+          const b = document.getElementById('shareBtn'); b.textContent = 'Copied'; setTimeout(()=>{ b.textContent = 'Copy'; },1500);
+          return;
+        } catch (ex) {
+          alert('Copy failed: ' + (ex && ex.message ? ex.message : e.message));
+        }
       }
     });
 
