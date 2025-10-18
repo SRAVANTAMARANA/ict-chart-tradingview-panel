@@ -171,7 +171,13 @@
         // Table row
         const row = document.createElement('tr');
   const safeLon = (typeof lon === 'number') ? lon.toFixed(4) : '';
-  const iconHtml = `<a href="/astro-table.html?scrollTo=${encodeURIComponent(name)}&lon=${encodeURIComponent(safeLon)}" target="_blank" title="Open table and scroll to ${name}" style="display:inline-block;text-decoration:none"><div style="width:14px;height:14px;border-radius:50%;background:${color};display:inline-block;margin-right:8px;vertical-align:middle;border:1px solid rgba(255,255,255,0.06)"></div></a>`;
+  // main colored circle: open table in same tab; small info icon opens planet detail in new tab
+  const iconHtml = `
+    <a href="/astro-table.html?scrollTo=${encodeURIComponent(name)}&lon=${encodeURIComponent(safeLon)}" title="Open table and scroll to ${name}" style="display:inline-block;text-decoration:none">
+      <div style="width:14px;height:14px;border-radius:50%;background:${color};display:inline-block;margin-right:6px;vertical-align:middle;border:1px solid rgba(255,255,255,0.06)"></div>
+    </a>
+    <a href="/astro-planet.html?planet=${encodeURIComponent(name)}&lon=${encodeURIComponent(safeLon)}" title="Open ${name} details" target="_blank" style="display:inline-block;text-decoration:none;margin-left:4px;color:rgba(255,255,255,0.7);font-size:12px;vertical-align:middle">ℹ️</a>
+  `;
         row.innerHTML = `
           <td style="padding:6px;">${iconHtml}</td>
           <td style="color:${color};font-weight:600">${name}</td>
