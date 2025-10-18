@@ -171,7 +171,7 @@
         // Table row
         const row = document.createElement('tr');
   const safeLon = (typeof lon === 'number') ? lon.toFixed(4) : '';
-  const iconHtml = `<a href="/astro-planet.html?planet=${encodeURIComponent(name)}&lon=${encodeURIComponent(safeLon)}" title="Open ${name} details" style="display:inline-block;text-decoration:none"><div style="width:14px;height:14px;border-radius:50%;background:${color};display:inline-block;margin-right:8px;vertical-align:middle;border:1px solid rgba(255,255,255,0.06)"></div></a>`;
+  const iconHtml = `<a href="/astro-table.html?scrollTo=${encodeURIComponent(name)}&lon=${encodeURIComponent(safeLon)}" target="_blank" title="Open table and scroll to ${name}" style="display:inline-block;text-decoration:none"><div style="width:14px;height:14px;border-radius:50%;background:${color};display:inline-block;margin-right:8px;vertical-align:middle;border:1px solid rgba(255,255,255,0.06)"></div></a>`;
         row.innerHTML = `
           <td style="padding:6px;">${iconHtml}</td>
           <td style="color:${color};font-weight:600">${name}</td>
@@ -210,30 +210,18 @@
 
   // Resize handler
   function onResize(){
-    // Calculate available canvas height dynamically: container height minus table and header
+    // Simpler: header and table reserve fixed heights; canvas fills remaining vertical space
     const header = document.querySelector('.header');
     const tableWrap = document.querySelector('.table-wrap');
     const w = window.innerWidth;
-    // compute header and table heights (fallbacks if not rendered yet)
     const headerH = header ? header.getBoundingClientRect().height : 64;
-    const tableH = tableWrap ? tableWrap.getBoundingClientRect().height : 260;
-    const targetH = Math.max(200, window.innerHeight - headerH - tableH - 32);
-    // smooth resize using requestAnimationFrame
-    let curH = renderer.domElement.height || renderer.getSize(new THREE.Vector2()).y;
-    curH = Math.round(curH);
-    const steps = 6;
-    const delta = (targetH - curH) / steps;
-    let step = 0;
-    const anim = () => {
-      step++;
-      const newH = Math.round(curH + delta * step);
-      renderer.setSize(w, newH);
-      renderer.domElement.style.height = newH + 'px';
-      camera.aspect = w / Math.max(1, newH);
-      camera.updateProjectionMatrix();
-      if (step < steps) requestAnimationFrame(anim);
-    };
-    requestAnimationFrame(anim);
+    const tableH = tableWrap ? tableWrap.querySelector('.table-scroll')?.getBoundingClientRect().height || tableWrap.getBoundingClientRect().height : 260;
+    const padding = 36; // breathing room
+    const targetH = Math.max(240, window.innerHeight - headerH - tableH - padding);
+    renderer.setSize(w, Math.round(targetH));
+    renderer.domElement.style.height = Math.round(targetH) + 'px';
+    camera.aspect = w / Math.max(1, Math.round(targetH));
+    camera.updateProjectionMatrix();
   }
   window.addEventListener('resize', onResize);
 

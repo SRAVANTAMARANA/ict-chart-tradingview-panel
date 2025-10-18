@@ -44,9 +44,35 @@
         const safeLon = (typeof lon==='number')?lon.toFixed(4):'';
         const icon = `<a href="/astro-planet.html?planet=${encodeURIComponent(name)}&lon=${encodeURIComponent(safeLon)}" target="_blank" title="Open ${name}"><div style="width:14px;height:14px;border-radius:50%;background:${color};display:inline-block;border:1px solid rgba(255,255,255,0.06)"></div></a>`;
         const tr = document.createElement('tr');
-        tr.innerHTML = `<td>${icon}</td><td style="font-weight:600;color:${color}">${name}</td><td>${p.zodiac_en||''}</td>${hasTelugu?`<td>${tel}</td>`:''}<td>${degree}°</td><td>${(speed||0).toFixed(3)}°/day</td><td>${p.retrograde?'<span style="color:#ff6b6b">℞</span>':'<span style="color:#51cf66">•</span>'}</td>`;
-        body.appendChild(tr);
+          tr.dataset.planet = name;
+          tr.innerHTML = `<td>${icon}</td><td style="font-weight:600;color:${color}">${name}</td><td>${p.zodiac_en||''}</td>${hasTelugu?`<td>${tel}</td>`:''}<td>${degree}°</td><td>${(speed||0).toFixed(3)}°/day</td><td>${p.retrograde?'<span style="color:#ff6b6b">℞</span>':'<span style="color:#51cf66">•</span>'}</td>`;
+          body.appendChild(tr);
       });
+
+        // handle scrollTo parameter (openers may pass ?scrollTo=PlanetName&lon=...)
+        try {
+          const params = new URLSearchParams(window.location.search);
+          const target = params.get('scrollTo');
+          if (target) {
+            const normalized = target.trim().toLowerCase();
+            const rowsEls = Array.from(body.querySelectorAll('tr'));
+            const match = rowsEls.find(r => r.dataset && r.dataset.planet && r.dataset.planet.toLowerCase() === normalized);
+            if (match) {
+              const container = document.querySelector('.table-scroll');
+              // compute offsetTop relative to container
+              const offsetTop = match.offsetTop - (container ? container.offsetTop : 0) - 12;
+              if (container && container.scrollTo) {
+                container.scrollTo({ top: offsetTop, behavior: 'smooth' });
+              } else {
+                match.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              }
+              match.classList.add('astro-highlight');
+              setTimeout(() => match.classList.remove('astro-highlight'), 2200);
+            }
+          }
+        } catch (err) {
+          console.warn('scrollTo handling failed', err);
+        }
     } catch (e){ console.error('load table failed',e); head.innerHTML=''; body.innerHTML='<tr><td colspan="6">Unable to load ephemeris.</td></tr>'; }
   }
 
