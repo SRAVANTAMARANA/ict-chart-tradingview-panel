@@ -35,8 +35,9 @@
 
   async function fetchEphemeris(date) {
     try {
+      const apiBase = (typeof window.API_BASE === 'string' && window.API_BASE) ? window.API_BASE.replace(/\/$/, '') : 'http://localhost:8081';
       const d = date ? `?date=${encodeURIComponent(date)}` : '';
-      const r = await fetch(`/astro/ephemeris${d}`);
+      const r = await fetch(`${apiBase}/astro/ephemeris${d}`);
       if (!r.ok) return null;
       const j = await r.json();
       return j;

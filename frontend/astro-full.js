@@ -92,7 +92,8 @@
       if (loadingOverlay) loadingOverlay.style.pointerEvents = 'auto';
       if (spinner) spinner.style.display = 'block';
       if (aiMentorSummary) { aiMentorSummary.style.display = 'none'; aiMentorText.textContent = 'Loading...'; }
-      const resp = await fetch(`/astro/ephemeris?date=${encodeURIComponent(dateValue)}`);
+  const apiBase = (typeof window.API_BASE === 'string' && window.API_BASE) ? window.API_BASE.replace(/\/$/, '') : 'http://localhost:8081';
+  const resp = await fetch(`${apiBase}/astro/ephemeris?date=${encodeURIComponent(dateValue)}`);
       if (!resp.ok) throw new Error('No ephemeris');
       const json = await resp.json();
 
@@ -169,7 +170,8 @@
 
         // Table row
         const row = document.createElement('tr');
-        const iconHtml = `<div style="width:14px;height:14px;border-radius:50%;background:${color};display:inline-block;margin-right:8px;vertical-align:middle;border:1px solid rgba(255,255,255,0.06)"></div>`;
+  const safeLon = (typeof lon === 'number') ? lon.toFixed(4) : '';
+  const iconHtml = `<a href="/astro-planet.html?planet=${encodeURIComponent(name)}&lon=${encodeURIComponent(safeLon)}" title="Open ${name} details" style="display:inline-block;text-decoration:none"><div style="width:14px;height:14px;border-radius:50%;background:${color};display:inline-block;margin-right:8px;vertical-align:middle;border:1px solid rgba(255,255,255,0.06)"></div></a>`;
         row.innerHTML = `
           <td style="padding:6px;">${iconHtml}</td>
           <td style="color:${color};font-weight:600">${name}</td>
