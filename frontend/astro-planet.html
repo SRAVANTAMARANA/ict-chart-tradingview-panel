@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Planet Details — Vedic & Nakshatra</title>
+  <style>
+    body{font-family:Inter,system-ui,Arial;margin:0;background:#0b1220;color:#e8f0ff}
+    .wrap{max-width:900px;margin:28px auto;padding:18px;background:linear-gradient(180deg,#081022,#0b1524);border-radius:8px;border:1px solid rgba(255,255,255,0.04)}
+    h1{margin:0 0 6px 0}
+    .row{display:flex;gap:12px;align-items:center}
+    .chip{background:rgba(255,255,255,0.03);padding:8px 12px;border-radius:6px}
+    .big{font-size:18px;font-weight:700}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div style="display:flex;justify-content:space-between;align-items:center;">
+      <div>
+        <div style="display:flex;align-items:center;gap:12px">
+          <div id="planetGlyph" style="width:46px;height:46px;border-radius:8px;background:rgba(255,255,255,0.03);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:18px">☉</div>
+          <div>
+            <h1 id="planetName">Planet</h1>
+            <div id="sub" class="chip">Vedic details</div>
+            <div id="teluguName" class="chip" style="margin-top:6px;display:none">Telugu name</div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <button id="backBtn" class="chip">← Back</button>
+        <button id="shareBtn" class="chip" style="margin-left:8px">Copy Link</button>
+      </div>
+    </div>
+
+    <section style="margin-top:18px;display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      <div style="background:rgba(255,255,255,0.02);padding:12px;border-radius:6px;">
+        <div class="big">Rāśi (Vedic Sign)</div>
+        <div id="rashi" style="margin-top:8px;font-size:14px"></div>
+        <div id="degRemainder" class="chip" style="margin-top:8px"></div>
+      </div>
+      <div style="background:rgba(255,255,255,0.02);padding:12px;border-radius:6px;">
+        <div class="big">Nakshatra</div>
+        <div id="nak" style="margin-top:8px;font-size:14px"></div>
+        <div id="pada" class="chip" style="margin-top:8px"></div>
+      </div>
+    </section>
+
+    <section style="margin-top:14px;background:rgba(255,255,255,0.02);padding:12px;border-radius:6px;">
+      <div id="notes" style="font-size:13px;color:var(--muted)"></div>
+      <div id="aiNote" style="margin-top:8px;background:rgba(255,255,255,0.01);padding:10px;border-radius:6px;display:none;color:#e6f0ff"></div>
+    </section>
+  </div>
+  <script src="/astro-planet.js"></script>
+</body>
+</html>
