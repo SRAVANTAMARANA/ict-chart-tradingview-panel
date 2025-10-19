@@ -7,8 +7,13 @@ services:
       - TWELVEDATA_APIKEY=${TWELVEDATA_APIKEY}
       - FINNHUB_KEY=${FINNHUB_KEY}
       - API_CACHE_TTL=${API_CACHE_TTL:-60}
+      - DATABASE_URL=${DATABASE_URL:-postgresql+asyncpg://postgres:password@postgres:5432/astroquant}
+      - REDIS_URL=${REDIS_URL:-redis://redis:6379/0}
     ports:
       - "8000:8000"
+    depends_on:
+      - postgres
+      - redis
     networks:
       - ict-net
 
@@ -22,6 +27,53 @@ services:
       - backend
     networks:
       - ict-net
+
+  postgres:
+    image: postgres:15
+    container_name: astro-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: astroquant
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./migrations:/docker-entrypoint-initdb.d
+    networks:
+      - ict-net
+
+  redis:
+    image: redis:7-alpine
+    container_name: astro-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - ict-net
+
+  news_ingestor:
+    build: ./news_ingestor
+    container_name: astro-news-ingestor
+    restart: unless-stopped
+    environment:
+      - DATABASE_URL=${DATABASE_URL:-postgresql+asyncpg://postgres:password@postgres:5432/astroquant}
+      - REDIS_URL=${REDIS_URL:-redis://redis:6379/0}
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+    ports:
+      - "8081:8081"
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - ict-net
+
+volumes:
+  postgres_data:
+  redis_data:
 
 networks:
   ict-net:

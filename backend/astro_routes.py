@@ -1232,3 +1232,39 @@ def generate_market_outlook(correlations):
 # which may not be available here and can cause runtime errors. If you
 # intentionally want to use the advanced engine, replace this assignment.
 astro_engine = SimpleAstroEngine()
+
+
+# Lightweight per-event AI insight endpoint
+@router.post("/astro/event-ai")
+async def event_ai(event: dict):
+    """Return a short AI-style insight for an individual astro event.
+
+    This synthesizer is intentionally small and runs locally. It provides
+    a concise reasoning snippet that the frontend can show on demand.
+    """
+    try:
+        ev = event or {}
+        ev_type = ev.get('type', '')
+        ev_title = ev.get('event') or ev.get('title') or 'Astro event'
+        planets = ev.get('planets') or []
+
+        score = 0.5
+        reason_parts = []
+        if 'Nakshatra' in ev_type or 'Nakshatra' in ev_title:
+            reason_parts.append('Nakshatra transit — possible sentiment shift')
+            score += 0.1
+        if isinstance(planets, (list, tuple)) and len(planets) >= 2:
+            reason_parts.append('Interplanetary aspect — increased probability of directional move')
+            score += 0.1
+        if ev.get('angle_diff') in [0, 180]:
+            reason_parts.append('Exact conjunction/opposition — high confluence')
+            score += 0.15
+
+        insight = {
+            'event': ev_title,
+            'insight': ' • '.join(reason_parts) if reason_parts else 'Minor event — low confluence',
+            'confidence': round(min(0.95, score), 2)
+        }
+        return insight
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f'AI insight generation failed: {str(e)}')
