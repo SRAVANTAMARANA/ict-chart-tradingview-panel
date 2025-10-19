@@ -196,6 +196,29 @@ class AstroCyclesModule {
     this._lastEvents = events;
   }
 
+  async fetchAndRenderAIMentor() {
+    try {
+      let ai = null;
+      // Try ephemeris endpoint (contains ai_mentor) then fallback to events endpoint
+      try {
+        const r = await fetch('/astro/ephemeris'); if (r.ok) { const j = await r.json(); ai = j.ai_mentor || null; }
+      } catch (e) { /* ignore */ }
+      if (!ai) {
+        try { const r2 = await fetch('/astro/events'); if (r2.ok) { const evs = await r2.json(); if (evs && evs.ai_mentor) ai = evs.ai_mentor; } } catch (e) {}
+      }
+
+      // Render into controls area
+      const controls = document.getElementById('astroEventsControls'); if (!controls) return;
+      let aiPanel = document.getElementById('astroAiSummaryPanel');
+      if (!aiPanel) {
+        aiPanel = document.createElement('div'); aiPanel.id='astroAiSummaryPanel'; aiPanel.style.marginLeft='12px'; aiPanel.style.padding='8px'; aiPanel.style.borderLeft='2px solid rgba(0,0,0,0.06)'; aiPanel.style.minWidth='260px'; aiPanel.style.fontSize='13px';
+        controls.appendChild(aiPanel);
+      }
+      if (!ai) { aiPanel.innerHTML = '<em>AI Mentor: no summary available</em>'; return; }
+      aiPanel.innerHTML = `<div style="font-weight:700">AI Mentor</div><div style="margin-top:6px">${this.escapeHtml(ai.narration || ai.narr || '')}</div><div style="margin-top:6px;font-weight:600">Trade idea: ${this.escapeHtml(ai.trade_idea || ai.trade || '')}</div><div style="margin-top:6px;color:var(--text-secondary)">Confluence: ${Number(ai.confluence_score||ai.confluence||ai.confidence||0).toFixed(2)}</div>`;
+    } catch (e) { console.warn('fetchAndRenderAIMentor failed', e); }
+  }
+
   filterAndRenderEvents(events) {
     try {
       const planet = document.getElementById('astroFilterPlanet')?.value || '';
