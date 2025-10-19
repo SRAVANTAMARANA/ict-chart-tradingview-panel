@@ -68,8 +68,8 @@ class AstroCyclesModule {
     const dateStr = this.currentDate.toISOString().split('T')[0];
     const head = document.getElementById('astroFloatingHeadRow');
     const body = document.getElementById('astroFloatingBody');
-    if (head) head.innerHTML = '<th>Planetary Table (embedded)</th>';
-    if (body) body.innerHTML = `<tr><td><div id="astroPlanetChipsContainer" style="padding:6px 0 8px;display:flex;gap:6px;flex-wrap:wrap"></div><iframe id="astroTableIframe" src="/astro-table.html?date=${encodeURIComponent(dateStr)}" style="width:100%;height:360px;border:0;background:transparent"></iframe></td></tr>`;
+  if (head) head.innerHTML = '<th>Planetary Table (embedded)</th>';
+  if (body) body.innerHTML = `<tr><td><div id="astroPlanetChipsContainer" style="padding:6px 0 8px;display:flex;gap:6px;flex-wrap:wrap;align-items:center"></div><iframe id="astroTableIframe" src="/astro-table.html?date=${encodeURIComponent(dateStr)}" style="width:100%;height:360px;border:0;background:transparent"></iframe></td></tr>`;
     // Render planet chips for quick testing (if no chips exist elsewhere on the page)
     this.renderPlanetChips();
     const timeElement = document.getElementById('astroFloatingTime'); if (timeElement) timeElement.textContent = `(${this.currentDate.toLocaleDateString()})`;
@@ -111,64 +111,67 @@ class AstroCyclesModule {
   }
 
   async updateEventsList() {
+    // Dashboard: show a compact Events button that opens the full events page in a new tab.
     const eventsList = document.getElementById('astroEventsList'); if (!eventsList) return;
     let events = null;
-    try {
-      const resp = await fetch('/astro/events'); if (resp && resp.ok) events = await resp.json();
-    } catch (e) { console.warn('Failed to fetch /astro/events', e); }
-    if (!events || !Array.isArray(events) || events.length === 0) events = this.generateAstrologicalEvents();
+    try { const resp = await fetch('/astro/events'); if (resp && resp.ok) events = await resp.json(); } catch (e) { /* ignore */ }
+    if (!events || !Array.isArray(events)) events = this.generateAstrologicalEvents();
 
-    // Build controls: filters, CSV / ICS export, and Subscribe link
-    const controlsId = 'astroEventsControls';
-    let controls = document.getElementById(controlsId);
-    if (!controls) {
-      controls = document.createElement('div');
-      controls.id = controlsId;
-      controls.style.display = 'flex';
-      controls.style.gap = '8px';
-      controls.style.marginBottom = '8px';
+    // Create a compact widget (only once)
+    const widgetId = 'astroEventsWidget';
+    let widget = document.getElementById(widgetId);
+    if (!widget) {
+      widget = document.createElement('div');
+      widget.id = widgetId;
+      widget.style.display = 'flex';
+      widget.style.alignItems = 'center';
+      widget.style.gap = '8px';
+      widget.style.marginBottom = '8px';
 
-      // Planet filter
-      const planetSelect = document.createElement('select');
-      planetSelect.id = 'astroFilterPlanet';
-      const allOpt = document.createElement('option'); allOpt.value=''; allOpt.textContent='All Planets'; planetSelect.appendChild(allOpt);
-      ['Sun','Moon','Mercury','Venus','Mars','Jupiter','Saturn','Uranus','Neptune'].forEach(p=>{ const o=document.createElement('option'); o.value=p; o.textContent=p; planetSelect.appendChild(o); });
-      planetSelect.addEventListener('change', () => this.filterAndRenderEvents(events));
+      const openBtn = document.createElement('button');
+  openBtn.type = 'button';
+  openBtn.id = 'openAstroEventsPageBtn';
+  openBtn.title = 'Open full Astro Events page';
+  openBtn.setAttribute('aria-label', 'Open full Astro Events page');
+  openBtn.setAttribute('role','button');
+  openBtn.setAttribute('tabindex','0');
+  openBtn.innerHTML = '📅 Events';
+      openBtn.style.padding = '6px 10px';
+      openBtn.style.borderRadius = '8px';
+      openBtn.style.cursor = 'pointer';
+      openBtn.addEventListener('click', () => {
+        const dateStr = this.currentDate.toISOString().split('T')[0];
+        const params = new URLSearchParams();
+        params.set('date', dateStr);
+        // If dashboard has filters present elsewhere, include them
+        const planet = document.getElementById('astroFilterPlanet')?.value || '';
+        const type = document.getElementById('astroFilterType')?.value || '';
+        const from = document.getElementById('astroFilterFrom')?.value || '';
+        const to = document.getElementById('astroFilterTo')?.value || '';
+        if (planet) params.set('planet', planet);
+        if (type) params.set('type', type);
+        if (from) params.set('from', from);
+        if (to) params.set('to', to);
+        const url = `/astro-events.html?${params.toString()}`;
+        window.open(url, '_blank');
+      });
+  // keyboard activation
+  openBtn.addEventListener('keydown', (e)=>{ if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openBtn.click(); } });
 
-      // Type filter
-      const typeSelect = document.createElement('select'); typeSelect.id='astroFilterType';
-      ['','Nakshatra Transit','Conjunction','Opposition','Trine','Square','Sextile'].forEach(t=>{ const o=document.createElement('option'); o.value=t; o.textContent = t||'All Types'; typeSelect.appendChild(o); });
-      typeSelect.addEventListener('change', () => this.filterAndRenderEvents(events));
+      const countBadge = document.createElement('div');
+      countBadge.id = 'astroEventsCountBadge';
+      countBadge.style.fontSize = '12px';
+      countBadge.style.color = 'var(--text-secondary, #6c757d)';
 
-      // Date range (from/to)
-      const fromInp = document.createElement('input'); fromInp.type='date'; fromInp.id='astroFilterFrom'; fromInp.addEventListener('change', ()=>this.filterAndRenderEvents(events));
-      const toInp = document.createElement('input'); toInp.type='date'; toInp.id='astroFilterTo'; toInp.addEventListener('change', ()=>this.filterAndRenderEvents(events));
+      widget.appendChild(openBtn);
+      widget.appendChild(countBadge);
 
-      const csvBtn = document.createElement('button'); csvBtn.type='button'; csvBtn.textContent='Export CSV'; csvBtn.style.padding='6px 10px';
-      csvBtn.addEventListener('click', ()=>{ const csv=this.eventsToCSV(events); this.downloadBlob(csv, 'text/csv;charset=utf-8;', `astro-events-${new Date().toISOString().slice(0,10)}.csv`); });
-
-      const icsBtn = document.createElement('button'); icsBtn.type='button'; icsBtn.textContent='Export ICS'; icsBtn.style.padding='6px 10px';
-      icsBtn.addEventListener('click', ()=>{ const ics=this.eventsToICS(events); this.downloadBlob(ics, 'text/calendar;charset=utf-8;', `astro-events-${new Date().toISOString().slice(0,10)}.ics`); });
-
-      const subscribeLink = document.createElement('a'); subscribeLink.href='/astro/events.ics'; subscribeLink.textContent='Subscribe Calendar'; subscribeLink.style.marginLeft='6px'; subscribeLink.title='Subscribe to astro events calendar (ICS)';
-
-      // Append controls
-      controls.appendChild(planetSelect);
-      controls.appendChild(typeSelect);
-      controls.appendChild(document.createTextNode('From:'));
-      controls.appendChild(fromInp);
-      controls.appendChild(document.createTextNode('To:'));
-      controls.appendChild(toInp);
-      controls.appendChild(csvBtn);
-      controls.appendChild(icsBtn);
-      controls.appendChild(subscribeLink);
-
-      eventsList.parentNode.insertBefore(controls, eventsList);
+      eventsList.parentNode.insertBefore(widget, eventsList);
     }
 
-    // Render events using centralized helper (stable indices, accessibility)
-    this._lastEvents = events;
-    this.renderEvents(events);
+    const badge = document.getElementById('astroEventsCountBadge'); if (badge) badge.textContent = `${(events && events.length) || 0} upcoming`;
+    // Keep the dashboard events area minimal to avoid spacing issues
+    eventsList.innerHTML = '<div class="astro-event-placeholder" style="padding:12px;color:var(--text-secondary)">Events are available on the full Events page. Click the Events button to open.</div>';
   }
 
   renderEvents(events) {

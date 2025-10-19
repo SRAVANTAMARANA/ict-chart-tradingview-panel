@@ -14,9 +14,13 @@
   async function load(date){
     try {
       const dstr = date || dateInput.value || new Date().toISOString().slice(0,10);
-      const r = await fetch(`${apiBase}/astro/ephemeris?date=${encodeURIComponent(dstr)}`);
-      if (!r.ok) throw new Error('no ephemeris');
-      const j = await r.json();
+      const url = `${apiBase}/astro/ephemeris?date=${encodeURIComponent(dstr)}`;
+      const r = await fetch(url);
+      if (!r.ok) {
+        const txt = await r.text().catch(()=>'');
+        throw new Error(`ephemeris fetch failed: ${r.status} ${r.statusText} ${txt}`);
+      }
+      const j = await r.json().catch(err => { throw new Error('invalid json in ephemeris response: '+err.message); });
       let positions = null;
       if (j && Array.isArray(j.ephemeris) && j.ephemeris.length>0 && j.ephemeris[0].positions) positions = j.ephemeris[0].positions;
       else if (j.positions) positions = j.positions;
@@ -129,6 +133,10 @@
     } catch (ex) { console.warn('postMessage handling failed', ex); }
   });
 
-  refreshBtn.addEventListener('click', ()=> load(dateInput.value));
+  if (refreshBtn) {
+    try { refreshBtn.addEventListener('click', ()=> load(dateInput.value)); } catch(err) { console.warn('failed to attach refreshBtn listener', err); }
+  } else {
+    console.warn('refresh button not found (id="tableRefresh")');
+  }
   await load();
 })();
