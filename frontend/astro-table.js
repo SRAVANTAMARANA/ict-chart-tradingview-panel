@@ -62,16 +62,27 @@
             const rowsEls = Array.from(body.querySelectorAll('tr'));
             const match = rowsEls.find(r => r.dataset && r.dataset.planet && r.dataset.planet.toLowerCase() === normalized);
             if (match) {
-              const container = document.querySelector('.table-scroll');
-              // compute offsetTop relative to container
-              const offsetTop = match.offsetTop - (container ? container.offsetTop : 0) - 12;
-              if (container && container.scrollTo) {
-                container.scrollTo({ top: offsetTop, behavior: 'smooth' });
-              } else {
-                match.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              // Prefer scrollIntoView for consistent centering and smoother UX.
+              try {
+                // First try to scroll the container if present, otherwise use scrollIntoView
+                const container = document.querySelector('.table-scroll');
+                if (container && typeof container.scrollTo === 'function') {
+                  // center the row inside the container
+                  const top = match.offsetTop - container.clientHeight / 2 + match.clientHeight / 2;
+                  container.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
+                } else {
+                  match.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+              } catch (scErr) {
+                // fallback
+                try { match.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (_) {}
               }
-              match.classList.add('astro-highlight');
-              setTimeout(() => match.classList.remove('astro-highlight'), 2200);
+
+              // Add highlight after a short delay so it is visible after scroll completes
+              setTimeout(() => {
+                match.classList.add('astro-highlight');
+                setTimeout(() => match.classList.remove('astro-highlight'), 2400);
+              }, 160);
             }
             else {
               console.warn('scrollTo param provided but no matching planet row found for', target);

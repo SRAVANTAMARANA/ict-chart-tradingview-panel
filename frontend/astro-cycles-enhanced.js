@@ -366,8 +366,47 @@ class AstroCyclesModule {
       // Instead of building rows here, embed the standalone table page via an iframe so rendering is centralized
       try {
         const dateStr = this.currentDate.toISOString().split('T')[0];
+        // Add a small toolbar above the iframe with quick links to open the standalone table
         head.innerHTML = '<th style="padding:4px 6px; border:1px solid var(--border-color); font-size:11px;">Planetary Table (embedded)</th>';
-        body.innerHTML = `<tr><td style="padding:0;border:0"><iframe src="/astro-table.html?date=${encodeURIComponent(dateStr)}" style="width:100%;height:360px;border:0;background:transparent"></iframe></td></tr>`;
+
+        // Build a small icon strip that allows quick open with scrollTo for each planet (same origin)
+        const iconStripId = 'astroEmbeddedIconStrip';
+        const stripHtml = `<div id="${iconStripId}" style="display:flex;gap:8px;padding:8px 12px;background:transparent;align-items:center;flex-wrap:wrap"></div>`;
+
+        // cache-buster to avoid stale iframe content
+        const v = Date.now();
+        const iframeSrc = `/astro-table.html?date=${encodeURIComponent(dateStr)}&v=${v}`;
+        body.innerHTML = `<tr><td style="padding:0;border:0">${stripHtml}<iframe id="astroEmbeddedTableIframe" src="${iframeSrc}" style="width:100%;height:360px;border:0;background:transparent"></iframe></td></tr>`;
+
+        // Populate the icon strip asynchronously once we have planetaryData or teluguMap
+        setTimeout(() => {
+          try {
+            const strip = document.getElementById(iconStripId);
+            if (!strip) return;
+            // Use this.planetaryData if available, otherwise fall back to a common list
+            const list = (this.planetaryData && Array.isArray(this.planetaryData) && this.planetaryData.length>0)
+              ? this.planetaryData.map(p=>p.name)
+              : ['Sun','Moon','Mercury','Venus','Mars','Jupiter','Saturn','Uranus','Neptune'];
+
+            strip.innerHTML = list.map(name => {
+              const safe = encodeURIComponent(name);
+              return `<a href="/astro-table.html?scrollTo=${safe}&date=${encodeURIComponent(dateStr)}&v=${v}" data-planet="${name}" class="astro-embed-icon" style="text-decoration:none;color:inherit"><div style="padding:6px 8px;border-radius:6px;background:rgba(255,255,255,0.02);font-size:12px">${name}</div></a>`;
+            }).join('');
+
+            // Make the icons open the iframe with scrollTo instead of navigating the whole page
+            strip.querySelectorAll('a.astro-embed-icon').forEach(a => {
+              a.addEventListener('click', (ev) => {
+                ev.preventDefault();
+                const planet = a.getAttribute('data-planet');
+                const iframe = document.getElementById('astroEmbeddedTableIframe');
+                if (!iframe) { window.location.href = a.href; return; }
+                // set iframe src to include scrollTo and cache-buster
+                const newSrc = `/astro-table.html?date=${encodeURIComponent(dateStr)}&scrollTo=${encodeURIComponent(planet)}&v=${Date.now()}`;
+                iframe.src = newSrc;
+              });
+            });
+          } catch (e) { console.warn('Failed to populate embedded icon strip', e); }
+        }, 20);
       } catch (embedErr) {
         // fallback to previous row rendering if iframe fails
         console.warn('Embedding standalone table failed, fallback to inline rows', embedErr);
