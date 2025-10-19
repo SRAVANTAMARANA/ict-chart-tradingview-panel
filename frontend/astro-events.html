@@ -1,0 +1,53 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>AstroQuant — Astro Event Table</title>
+  <link rel="stylesheet" href="/styles/astro-events.css" />
+  <!-- DEV: using unpkg React for quick dev mounting -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/babel-standalone@6.26.0/babel.min.js"></script>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const AstroEventTable = () => {
+      const [events, setEvents] = React.useState([]);
+      const [preds, setPreds] = React.useState([]);
+      React.useEffect(()=>{ fetch('/astro/events').then(r=>r.json()).then(setEvents) },[]);
+      React.useEffect(()=>{ fetch('/astro/predictions').then(r=>r.json()).then(setPreds) },[]);
+      return React.createElement(window['AstroEventTableModule'].default, {events, preds});
+    };
+
+    // Load our components from local files via dynamic import hack (since unbundled)
+    (async function(){
+      // fetch component source and eval into a module-like object
+      const astroCompResp = await fetch('/components/AstroEventTable.js');
+      const astroCompSrc = await astroCompResp.text();
+      const aiCompResp = await fetch('/components/AIReasoningPanel.js');
+      const aiCompSrc = await aiCompResp.text();
+
+      // create a simple module container
+      window['AstroEventTableModule'] = { default: null };
+      // eslint-disable-next-line no-eval
+      eval(`(function(exports){ ${aiCompSrc}; exports.AIReasoningPanel = exports.default; })(window['ASTEMP'] = {})`);
+      // expose AIReasoningPanel to global for the main component to import
+      window.AIReasoningPanel = window['ASTEMP'].AIReasoningPanel;
+
+      // evaluate main component
+      // Note: the AstroEventTable uses import statement; we'll create a simple wrapper by evaluating the file and setting default
+      // replace "import AIReasoningPanel from './AIReasoningPanel';" with reference to window.AIReasoningPanel
+      const wrapped = astroCompSrc.replace("import AIReasoningPanel from './AIReasoningPanel';", "const AIReasoningPanel = window.AIReasoningPanel;");
+      // eslint-disable-next-line no-eval
+      eval(`(function(exports){ ${wrapped}; exports.default = typeof AstroEventTable==='function' ? AstroEventTable : (typeof exports.default === 'function' ? exports.default : null); })(window['AstroEventTableModule'])`);
+
+      const root = document.getElementById('root');
+      const el = React.createElement(window['AstroEventTableModule'].default, {});
+      ReactDOM.createRoot(root).render(el);
+    })();
+  </script>
+</body>
+</html>

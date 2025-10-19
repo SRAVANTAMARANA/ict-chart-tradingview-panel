@@ -1,0 +1,10 @@
+/* Basic styles for Astro Event Table */
+.astro-event-container{max-width:1100px;margin:18px auto;padding:12px;background:linear-gradient(180deg,#001219,#001e2b);color:#e8f6ff;border-radius:8px}
+.astro-event-container h2{margin:0 0 8px 0}
+.astro-event-container .controls{display:flex;gap:8px;margin-bottom:12px}
+.astro-event-container .controls input, .astro-event-container .controls select{padding:6px;border-radius:6px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit}
+.astro-table{width:100%;border-collapse:collapse}
+.astro-table th, .astro-table td{padding:8px;border-bottom:1px solid rgba(255,255,255,0.03);font-size:13px}
+.astro-table th{color:#00dfff}
+.telugu{font-size:11px;color:#9fb1c4}
+.ai-reasoning-panel{margin-top:18px;background:linear-gradient(90deg,#001219,#002b36);padding:12px;border-radius:8px}
