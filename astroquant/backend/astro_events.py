@@ -8,10 +8,18 @@ astro_events.py
 Note: requires pyswisseph (pip install pyswisseph)
 """
 
-import swisseph as swe
+try:
+    import swisseph as swe
+    SWE_AVAILABLE = True
+except Exception:
+    swe = None
+    SWE_AVAILABLE = False
+
 import datetime, json, math, os
 
-swe.set_ephe_path('.')  # set to where swe.wasm or ephemeris files live if needed
+if SWE_AVAILABLE and hasattr(swe, 'set_ephe_path'):
+    # set to where swe.wasm or ephemeris files live if needed
+    swe.set_ephe_path('.')
 
 PLANETS = [
     (swe.SUN, "Sun", "సూర్యుడు"),

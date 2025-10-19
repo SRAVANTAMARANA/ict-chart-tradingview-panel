@@ -91,8 +91,43 @@
         } catch (err) {
           console.warn('scrollTo handling failed', err);
         }
+      // listen for parent postMessage to scroll/highlight a planet row
+      window.addEventListener('message', (ev) => {
+        try {
+          const data = ev && ev.data;
+          if (!data || data.type !== 'astro-scroll') return;
+          const planet = data.planet;
+          if (planet) scrollToPlanet(planet);
+        } catch (err) {
+          console.warn('astro-table: message handler error', err);
+        }
+      }, false);
     } catch (e){ console.error('load table failed',e); head.innerHTML=''; body.innerHTML='<tr><td colspan="6">Unable to load ephemeris.</td></tr>'; }
   }
+
+  // Listen for parent postMessage requests to scroll/highlight a planet row
+  window.addEventListener('message', (ev) => {
+    try {
+      const data = ev.data || {};
+      if (!data || data.type !== 'astro-scroll' || !data.planet) return;
+      const normalized = String(data.planet).trim().toLowerCase();
+      const rowsEls = Array.from(body.querySelectorAll('tr'));
+      const match = rowsEls.find(r => r.dataset && r.dataset.planet && r.dataset.planet.toLowerCase() === normalized);
+      if (!match) return;
+      try {
+        const container = document.querySelector('.table-scroll');
+        if (container && typeof container.scrollTo === 'function') {
+          const top = match.offsetTop - container.clientHeight / 2 + match.clientHeight / 2;
+          container.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
+        } else {
+          match.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      } catch (scErr) {
+        try { match.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (_) {}
+      }
+      setTimeout(() => { match.classList.add('astro-highlight'); setTimeout(() => match.classList.remove('astro-highlight'), 2400); }, 160);
+    } catch (ex) { console.warn('postMessage handling failed', ex); }
+  });
 
   refreshBtn.addEventListener('click', ()=> load(dateInput.value));
   await load();
