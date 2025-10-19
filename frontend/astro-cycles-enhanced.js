@@ -82,12 +82,13 @@ class AstroCyclesModule {
       // Use planetaryData if available, otherwise default set
       const planets = (this.planetaryData && this.planetaryData.length) ? this.planetaryData.map(p => p.name) : ['Sun','Moon','Mercury','Venus','Mars','Jupiter','Saturn','Uranus','Neptune'];
       container.innerHTML = '';
-      planets.forEach((p) => {
+      planets.forEach((p, i) => {
         const btn = document.createElement('button');
         btn.type = 'button';
         btn.dataset.planet = p;
         btn.className = 'astro-planet-chip';
         btn.textContent = p;
+        btn.setAttribute('aria-label', `Scroll to ${p} in astro table`);
         btn.style.border = '1px solid rgba(0,0,0,0.08)';
         btn.style.padding = '6px 8px';
         btn.style.borderRadius = '6px';
@@ -165,21 +166,25 @@ class AstroCyclesModule {
       eventsList.parentNode.insertBefore(controls, eventsList);
     }
 
-    // Render events list with Vedic/Telugu fields when available
-    const html = events.map(ev => {
+    // Render events using centralized helper (stable indices, accessibility)
+    this._lastEvents = events;
+    this.renderEvents(events);
+  }
+
+  renderEvents(events) {
+    const eventsList = document.getElementById('astroEventsList'); if (!eventsList) return;
+    const html = events.map((ev, idx) => {
       const date = ev.date || ev.datetime || ev.jd || '';
       const title = ev.event || ev.type || ev.name || '';
       const desc = ev.description || ev.event || ev.note || '';
       const planets = (ev.planets && Array.isArray(ev.planets)) ? ev.planets.join(', ') : (ev.planets || '');
-      // Vedic fields
       const nak = ev.nakshatra || ev.nakshatra_name || ev.nakshatra_en || '';
       const pada = ev.pada || ev.nakshatra_pada || '';
       const deity = ev.deity || '';
       const teluguLabel = ev.label_telugu || ev.labelTelugu || '';
-
       const leftColor = ev.color || (ev.type && ev.type.toLowerCase().includes('retro') ? '#E57373' : '#4FD0E7');
 
-      return (`<div class="astro-event-item" style="border-left:4px solid ${leftColor};padding:10px;margin-bottom:8px;display:flex;flex-direction:column">
+      return (`<div class="astro-event-item" role="listitem" style="border-left:4px solid ${leftColor};padding:10px;margin-bottom:8px;display:flex;flex-direction:column">
         <div style="display:flex;justify-content:space-between;align-items:center">
           <div style="font-weight:700">${this.escapeHtml(title)}</div>
           <div style="font-size:12px;color:var(--text-secondary)">${this.escapeHtml(date)}</div>
@@ -188,12 +193,38 @@ class AstroCyclesModule {
         <div style="font-size:12px;color:var(--text-secondary);margin-top:6px">Planets: ${this.escapeHtml(planets)}</div>
         ${nak ? `<div style="font-size:12px;margin-top:6px">Nakshatra: <strong>${this.escapeHtml(nak)}</strong> ${pada ? ` — Pada: ${this.escapeHtml(pada)}` : ''} ${deity ? ` — Deity: ${this.escapeHtml(deity)}` : ''}</div>` : ''}
         ${teluguLabel ? `<div style="font-size:12px;margin-top:6px">Telugu: ${this.escapeHtml(teluguLabel)}</div>` : ''}
+        <div style="margin-top:8px;display:flex;gap:8px;align-items:center">
+          <button type="button" class="astro-show-ai-btn" data-evt-index="${idx}" aria-controls="astro-event-ai-${idx}" aria-expanded="false" style="padding:6px 8px;font-size:12px">Show AI</button>
+          <div class="astro-event-ai" id="astro-event-ai-${idx}" style="font-size:13px;color:var(--text-secondary)"></div>
+        </div>
       </div>`);
     }).join('');
 
+    eventsList.setAttribute('role', 'list');
     eventsList.innerHTML = html;
-    // Store raw events for filtering
-    this._lastEvents = events;
+
+    // Wire buttons consistently
+    document.querySelectorAll('.astro-show-ai-btn').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        const idx = Number(btn.dataset['evtIndex']);
+        const ev = (this._lastEvents && this._lastEvents[idx]) ? this._lastEvents[idx] : null;
+        if (!ev) return;
+        const target = document.getElementById(`astro-event-ai-${idx}`);
+        if (target) target.textContent = 'Loading insight...';
+        try {
+          const r = await fetch('/astro/event-ai', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(ev) });
+          if (r.ok) {
+            const j = await r.json();
+            const conf = Number(j.confidence ?? j.conf ?? j.confluence_score ?? 0);
+            const confStr = isFinite(conf) ? conf.toFixed(2) : '0.00';
+            if (target) target.textContent = `${j.insight || j.insight_text || 'Insight not available'} (confidence: ${confStr})`;
+            btn.setAttribute('aria-expanded', 'true');
+          } else {
+            if (target) target.textContent = 'AI insight unavailable';
+          }
+        } catch (err) { if (target) target.textContent = 'AI request failed'; }
+      });
+    });
   }
 
   async fetchAndRenderAIMentor() {
