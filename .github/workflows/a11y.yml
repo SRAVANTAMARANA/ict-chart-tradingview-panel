@@ -1,0 +1,34 @@
+name: Accessibility checks (pa11y)
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  pa11y:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install pa11y-ci
+        run: |
+          npm ci --no-audit --prefer-offline || true
+          npm i -g pa11y-ci@6
+
+      - name: Start a simple static server
+        run: |
+          # serve frontend on port 3000
+          cd frontend
+          npx http-server -p 3000 &
+          sleep 2
+
+      - name: Run pa11y checks
+        run: |
+          pa11y-ci --config ./pa11yci.json
+
+      - name: Stop server
+        run: |
+          pkill -f http-server || true
+
