@@ -117,7 +117,7 @@ class AstroCyclesModule {
     } catch (e) { console.warn('Failed to fetch /astro/events', e); }
     if (!events || !Array.isArray(events) || events.length === 0) events = this.generateAstrologicalEvents();
 
-    // Build controls: CSV / ICS export
+    // Build controls: filters, CSV / ICS export, and Subscribe link
     const controlsId = 'astroEventsControls';
     let controls = document.getElementById(controlsId);
     if (!controls) {
@@ -126,26 +126,42 @@ class AstroCyclesModule {
       controls.style.display = 'flex';
       controls.style.gap = '8px';
       controls.style.marginBottom = '8px';
-      const csvBtn = document.createElement('button');
-      csvBtn.type = 'button';
-      csvBtn.textContent = 'Export CSV';
-      csvBtn.style.padding = '6px 10px';
-      csvBtn.addEventListener('click', () => {
-        const csv = this.eventsToCSV(events);
-        this.downloadBlob(csv, 'text/csv;charset=utf-8;', `astro-events-${new Date().toISOString().slice(0,10)}.csv`);
-      });
 
-      const icsBtn = document.createElement('button');
-      icsBtn.type = 'button';
-      icsBtn.textContent = 'Export ICS';
-      icsBtn.style.padding = '6px 10px';
-      icsBtn.addEventListener('click', () => {
-        const ics = this.eventsToICS(events);
-        this.downloadBlob(ics, 'text/calendar;charset=utf-8;', `astro-events-${new Date().toISOString().slice(0,10)}.ics`);
-      });
+      // Planet filter
+      const planetSelect = document.createElement('select');
+      planetSelect.id = 'astroFilterPlanet';
+      const allOpt = document.createElement('option'); allOpt.value=''; allOpt.textContent='All Planets'; planetSelect.appendChild(allOpt);
+      ['Sun','Moon','Mercury','Venus','Mars','Jupiter','Saturn','Uranus','Neptune'].forEach(p=>{ const o=document.createElement('option'); o.value=p; o.textContent=p; planetSelect.appendChild(o); });
+      planetSelect.addEventListener('change', () => this.filterAndRenderEvents(events));
 
+      // Type filter
+      const typeSelect = document.createElement('select'); typeSelect.id='astroFilterType';
+      ['','Nakshatra Transit','Conjunction','Opposition','Trine','Square','Sextile'].forEach(t=>{ const o=document.createElement('option'); o.value=t; o.textContent = t||'All Types'; typeSelect.appendChild(o); });
+      typeSelect.addEventListener('change', () => this.filterAndRenderEvents(events));
+
+      // Date range (from/to)
+      const fromInp = document.createElement('input'); fromInp.type='date'; fromInp.id='astroFilterFrom'; fromInp.addEventListener('change', ()=>this.filterAndRenderEvents(events));
+      const toInp = document.createElement('input'); toInp.type='date'; toInp.id='astroFilterTo'; toInp.addEventListener('change', ()=>this.filterAndRenderEvents(events));
+
+      const csvBtn = document.createElement('button'); csvBtn.type='button'; csvBtn.textContent='Export CSV'; csvBtn.style.padding='6px 10px';
+      csvBtn.addEventListener('click', ()=>{ const csv=this.eventsToCSV(events); this.downloadBlob(csv, 'text/csv;charset=utf-8;', `astro-events-${new Date().toISOString().slice(0,10)}.csv`); });
+
+      const icsBtn = document.createElement('button'); icsBtn.type='button'; icsBtn.textContent='Export ICS'; icsBtn.style.padding='6px 10px';
+      icsBtn.addEventListener('click', ()=>{ const ics=this.eventsToICS(events); this.downloadBlob(ics, 'text/calendar;charset=utf-8;', `astro-events-${new Date().toISOString().slice(0,10)}.ics`); });
+
+      const subscribeLink = document.createElement('a'); subscribeLink.href='/astro/events.ics'; subscribeLink.textContent='Subscribe Calendar'; subscribeLink.style.marginLeft='6px'; subscribeLink.title='Subscribe to astro events calendar (ICS)';
+
+      // Append controls
+      controls.appendChild(planetSelect);
+      controls.appendChild(typeSelect);
+      controls.appendChild(document.createTextNode('From:'));
+      controls.appendChild(fromInp);
+      controls.appendChild(document.createTextNode('To:'));
+      controls.appendChild(toInp);
       controls.appendChild(csvBtn);
       controls.appendChild(icsBtn);
+      controls.appendChild(subscribeLink);
+
       eventsList.parentNode.insertBefore(controls, eventsList);
     }
 
@@ -176,6 +192,46 @@ class AstroCyclesModule {
     }).join('');
 
     eventsList.innerHTML = html;
+    // Store raw events for filtering
+    this._lastEvents = events;
+  }
+
+  filterAndRenderEvents(events) {
+    try {
+      const planet = document.getElementById('astroFilterPlanet')?.value || '';
+      const type = document.getElementById('astroFilterType')?.value || '';
+      const from = document.getElementById('astroFilterFrom')?.value || '';
+      const to = document.getElementById('astroFilterTo')?.value || '';
+      let filtered = (events || this._lastEvents || []).slice();
+      if (planet) filtered = filtered.filter(ev => (ev.planets || []).map(p=>String(p).toLowerCase()).includes(planet.toLowerCase()) || String(ev.event||ev.title||'').toLowerCase().includes(planet.toLowerCase()));
+      if (type) filtered = filtered.filter(ev => String(ev.type||ev.event||ev.title||'').toLowerCase().includes(type.toLowerCase()));
+      if (from) filtered = filtered.filter(ev => (ev.date || ev.datetime || '').slice(0,10) >= from);
+      if (to) filtered = filtered.filter(ev => (ev.date || ev.datetime || '').slice(0,10) <= to);
+      // Reuse rendering logic by temporarily invoking updateEventsList renderer with the filtered array
+      const eventsList = document.getElementById('astroEventsList'); if (!eventsList) return;
+      const html = filtered.map(ev => {
+        const date = ev.date || ev.datetime || ev.jd || '';
+        const title = ev.event || ev.type || ev.name || '';
+        const desc = ev.description || ev.event || ev.note || '';
+        const planets = (ev.planets && Array.isArray(ev.planets)) ? ev.planets.join(', ') : (ev.planets || '');
+        const nak = ev.nakshatra || ev.nakshatra_name || ev.nakshatra_en || '';
+        const pada = ev.pada || ev.nakshatra_pada || '';
+        const deity = ev.deity || '';
+        const teluguLabel = ev.label_telugu || ev.labelTelugu || '';
+        const leftColor = ev.color || (ev.type && ev.type.toLowerCase().includes('retro') ? '#E57373' : '#4FD0E7');
+        return (`<div class="astro-event-item" style="border-left:4px solid ${leftColor};padding:10px;margin-bottom:8px;display:flex;flex-direction:column">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div style="font-weight:700">${this.escapeHtml(title)}</div>
+            <div style="font-size:12px;color:var(--text-secondary)">${this.escapeHtml(date)}</div>
+          </div>
+          <div style="font-size:13px;margin-top:6px">${this.escapeHtml(desc)}</div>
+          <div style="font-size:12px;color:var(--text-secondary);margin-top:6px">Planets: ${this.escapeHtml(planets)}</div>
+          ${nak ? `<div style="font-size:12px;margin-top:6px">Nakshatra: <strong>${this.escapeHtml(nak)}</strong> ${pada ? ` — Pada: ${this.escapeHtml(pada)}` : ''} ${deity ? ` — Deity: ${this.escapeHtml(deity)}` : ''}</div>` : ''}
+          ${teluguLabel ? `<div style="font-size:12px;margin-top:6px">Telugu: ${this.escapeHtml(teluguLabel)}</div>` : ''}
+        </div>`);
+      }).join('');
+      eventsList.innerHTML = html;
+    } catch (e) { console.warn('filterAndRenderEvents failed', e); }
   }
 
   generateAstrologicalEvents() { const events = []; const types=['Mercury Retrograde','New Moon','Venus-Jupiter Trine','Mars Square Saturn']; for (let i=0;i<10;i++){ const d=new Date(this.currentDate); d.setDate(d.getDate()+i); if (Math.random()<0.3) events.push({ type: types[Math.floor(Math.random()*types.length)], description:'', date: d.toLocaleDateString(), color: '#FFD700' }); } return events; }
