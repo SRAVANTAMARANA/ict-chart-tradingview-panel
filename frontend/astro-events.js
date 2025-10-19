@@ -2,7 +2,9 @@
 (function(){
   async function fetchEvents(){
     try{
-      const r = await fetch('/astro/events');
+      const apiBase = (typeof window.API_BASE === 'string' && window.API_BASE) ? window.API_BASE.replace(/\/$/, '') : 'http://127.0.0.1:8081';
+      console.debug('astro-events: fetching events from', apiBase + '/astro/events');
+      const r = await fetch(apiBase + '/astro/events');
       if (!r.ok) throw new Error('events fetch failed: '+r.status);
       const j = await r.json();
       return Array.isArray(j) ? j : (j.events || []);
@@ -84,17 +86,22 @@
     if (controlsHolder){
       // build enhanced controls: planet/type/from/to + CSV/ICS/subscribe
       controlsHolder.innerHTML = '';
-      const planetSelect = document.createElement('select'); planetSelect.id='filterPlanet';
+  const planetSelect = document.createElement('select'); planetSelect.id='filterPlanet';
+  planetSelect.setAttribute('aria-label','Filter by planet');
+  planetSelect.title = 'Filter by planet';
       const allOpt = document.createElement('option'); allOpt.value=''; allOpt.textContent='All Planets'; planetSelect.appendChild(allOpt);
       ['Sun','Moon','Mercury','Venus','Mars','Jupiter','Saturn','Uranus','Neptune'].forEach(p=>{ const o=document.createElement('option'); o.value=p; o.textContent=p; planetSelect.appendChild(o); });
       planetSelect.value = filters.planet || '';
 
-      const typeSelect = document.createElement('select'); typeSelect.id='filterType'; const tAll = document.createElement('option'); tAll.value=''; tAll.textContent='All Types'; typeSelect.appendChild(tAll);
+  const typeSelect = document.createElement('select'); typeSelect.id='filterType';
+  typeSelect.setAttribute('aria-label','Filter by event type');
+  typeSelect.title = 'Filter by event type';
+  const tAll = document.createElement('option'); tAll.value=''; tAll.textContent='All Types'; typeSelect.appendChild(tAll);
       ['Nakshatra Transit','Conjunction','Opposition','Trine','Square','Sextile'].forEach(t=>{ const o=document.createElement('option'); o.value=t; o.textContent=t; typeSelect.appendChild(o); });
       typeSelect.value = filters.type || '';
 
-      const fromInp = document.createElement('input'); fromInp.type='date'; fromInp.id='filterFrom'; fromInp.value = filters.from || '';
-      const toInp = document.createElement('input'); toInp.type='date'; toInp.id='filterTo'; toInp.value = filters.to || '';
+  const fromInp = document.createElement('input'); fromInp.type='date'; fromInp.id='filterFrom'; fromInp.value = filters.from || ''; fromInp.setAttribute('aria-label','Filter from date'); fromInp.title='From date';
+  const toInp = document.createElement('input'); toInp.type='date'; toInp.id='filterTo'; toInp.value = filters.to || ''; toInp.setAttribute('aria-label','Filter to date'); toInp.title='To date';
 
       const csvBtn = document.createElement('button'); csvBtn.textContent='Export CSV'; csvBtn.addEventListener('click', ()=>{ const csv = window.astroCyclesModule ? window.astroCyclesModule.eventsToCSV(currentViewEvents) : ''; const blob=new Blob([csv],{type:'text/csv'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='astro-events.csv'; a.click(); setTimeout(()=>URL.revokeObjectURL(url),2000); });
       const icsBtn = document.createElement('button'); icsBtn.textContent='Export ICS'; icsBtn.addEventListener('click', ()=>{ const ics = window.astroCyclesModule ? window.astroCyclesModule.eventsToICS(currentViewEvents) : ''; const blob=new Blob([ics],{type:'text/calendar'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='astro-events.ics'; a.click(); setTimeout(()=>URL.revokeObjectURL(url),2000); });
@@ -153,6 +160,11 @@
     });
   }
 
-  // Kick off
-  document.addEventListener('DOMContentLoaded', init);
+  // Kick off: run init immediately if DOM already parsed, otherwise wait for DOMContentLoaded
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    // DOM already ready
+    try { init(); } catch (e) { console.error('astro-events init failed', e); }
+  }
 })();
