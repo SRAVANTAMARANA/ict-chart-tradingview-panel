@@ -1,3 +1,37 @@
+/* Small visual and accessibility polish for astro-events page */
+body { font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; color: #0b1220; background: #fff; }
+.container { max-width: 980px; margin: 24px auto; padding: 12px; }
+.header { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+.controls > * { margin-right:8px; }
+.events-list { display:flex; flex-direction:column; gap:12px; margin-top:12px; }
+.astro-event-item { border:1px solid #e6eef2; padding:12px; border-radius:6px; background:#fbfeff; box-shadow:0 1px 0 rgba(10,10,10,0.02); }
+.evt-head { display:flex; justify-content:space-between; align-items:center; gap:8px; }
+.evt-desc { margin:8px 0; color:#263238; }
+.evt-meta { font-size:0.95rem; color:#37474f; }
+.evt-telugu { font-size:1rem; color:#0b3b2e; font-weight:600; margin-top:6px; }
+.telugu { font-family: 'Noto Sans Telugu', 'Lohit Telugu', serif; }
+.evt-actions { margin-top:8px; display:flex; gap:8px; align-items:center; }
+.ai-btn { background:#036; color:#fff; border:none; padding:6px 10px; border-radius:4px; cursor:pointer; }
+.ai-btn[aria-busy="true"] { opacity:0.7; }
+.ai-output { margin-left:6px; color:#063; }
+.astro-event-item:focus { outline:3px solid #BEE3F8; outline-offset:3px; }
+.skip-link { left:8px; top:8px; position:fixed; z-index:1000; }
+
+@media (max-width:600px){
+  .container{ padding:8px; }
+  .evt-head{ flex-direction:column; align-items:flex-start; }
+}
+
+/* Floating toolbar for single-click actions */
+.fab-toolbar{ position:fixed; right:20px; bottom:20px; display:flex; flex-direction:column; gap:8px; z-index:1200; }
+.fab-btn{ background:linear-gradient(180deg,#00c9ff,#00a6d6); color:#012; border:none; padding:10px 12px; border-radius:8px; box-shadow:0 6px 18px rgba(0,0,0,0.35); cursor:pointer; font-weight:700; }
+.fab-btn:focus{ outline:3px solid #7ee7ff; outline-offset:4px; }
+.fab-btn--secondary{ background:#fff; color:#013; border:1px solid #00a6d6; }
+.fab-label{ display:block; font-size:0.8rem; text-align:center; margin-top:4px; color:#cde; }
+
+@media (max-width:700px){
+  .fab-toolbar{ display:none; }
+}
 /* Standalone astro events page styles (lightweight, accessible) */
 :root{--bg:#0b1b22;--panel:#06292f;--muted:#9fb1c4;--accent:#00dfff}
 .root-font{font-family:Inter,system-ui,Segoe UI,Arial,sans-serif}

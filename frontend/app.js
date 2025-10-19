@@ -862,6 +862,9 @@ window.hideChartError = function() {
       window.__directSeries__ = window.candleSeries;
       window._chartRef = window.chart;
 
+  // Ensure overlay click wiring (tooltips) is attached when chart is ready
+  try { if (window.chartEventOverlay && typeof window.chartEventOverlay.wireClicks === 'function') window.chartEventOverlay.wireClicks(); } catch(e) { console.warn('overlay wireClicks failed', e); }
+
 
       // Always load candles from backend for all symbols
       let backendInterval = interval;
@@ -893,6 +896,8 @@ window.hideChartError = function() {
           candleSeries = window.candleSeries;
           lastCandles = data;
           console.log(`✅ Successfully loaded ${data.length} candles for ${symbol} ${backendInterval} from backend`);
+          // initialize chart event overlay if available
+          try{ if (window.chartEventOverlay && typeof window.chartEventOverlay.init === 'function') window.chartEventOverlay.init(); } catch(e){ console.warn('overlay init error', e); }
         })
         .catch(e => {
           console.error('❌ Failed to load backend data:', e);
@@ -929,7 +934,7 @@ window.hideChartError = function() {
       window.__pairWs.onmessage = (ev) => {
         try {
           const msg = JSON.parse(ev.data);
-          if (msg.candles && Array.isArray(msg.candles)) {
+            if (msg.candles && Array.isArray(msg.candles)) {
             // Initial batch
             const data = msg.candles.map(k => ({
               time: k.time,
@@ -942,6 +947,8 @@ window.hideChartError = function() {
             candleSeries = window.candleSeries;
             lastCandles = data;
             console.log(`✅ Loaded initial ${data.length} candles from backend WS`);
+            // refresh/init overlay after initial WS batch
+            try{ if (window.chartEventOverlay && typeof window.chartEventOverlay.init === 'function') window.chartEventOverlay.init(); } catch(e){ console.warn('overlay init error', e); }
           } else if (msg.bar) {
             // Live update
             const bar = msg.bar;

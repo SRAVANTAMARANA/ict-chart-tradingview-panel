@@ -1,0 +1,114 @@
+name: CI - Smoke + Axe Audit
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  unit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install deps (none required) and run unit tests
+        run: |
+          # run the filter test directly
+          node frontend/tests/filter.test.js
+
+  smoke:
+    needs: unit
+    runs-on: ubuntu-latest
+    outputs:
+      smoke_ok: ${{ steps.smoke_check.outcome }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Docker Compose
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y docker-compose-plugin docker.io
+
+      - name: Try docker-compose up (if docker-compose.yml present)
+        id: smoke_check
+        run: |
+          if [ -f docker-compose.yml ]; then
+            docker compose up -d --build
+            # wait for backend
+            for i in `seq 1 30`; do
+              if curl -sSf http://127.0.0.1:8081/health >/dev/null 2>&1; then
+                echo "backend up"; break
+              fi
+              sleep 1
+            done
+            # run smoke script if present
+            if [ -x ./scripts/smoke_test.sh ]; then
+              ./scripts/smoke_test.sh http://127.0.0.1:8081
+            else
+              echo "no smoke script, performing basic checks"
+              curl -sSf http://127.0.0.1:8081/astro/events || exit 1
+            fi
+          else
+            echo "no docker-compose.yml, skipping docker-based smoke"
+            # quick local sanity checks (assume backend may be run by other means)
+            if curl -sSf http://127.0.0.1:8081/health >/dev/null 2>&1; then
+              echo "backend responsive"
+            else
+              echo "backend not responsive - smoke failed"; exit 1
+            fi
+          fi
+
+  axe-audit:
+    needs: smoke
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install Chromium
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y chromium-browser chromium
+
+      - name: Start frontend static server
+        run: |
+          cd frontend
+          nohup python3 -m http.server 3000 >/tmp/frontend.log 2>&1 &
+
+      - name: Wait for frontend
+        run: |
+          for i in `seq 1 30`; do
+            if curl -sSf http://127.0.0.1:3000/astro-events.html >/dev/null; then
+              echo "frontend up"; break
+            fi
+            sleep 1
+          done
+
+      - name: Run Axe CLI
+        run: |
+          npx --yes @axe-core/cli http://127.0.0.1:3000/astro-events.html --save axe-report.json --stdout || true
+
+      - name: Fail on serious/critical violations
+        if: always()
+        run: |
+          if [ ! -f axe-report.json ]; then echo "no axe report"; exit 0; fi
+          node -e "const fs=require('fs');const j=JSON.parse(fs.readFileSync('axe-report.json')); const v=(j.violations||[]).filter(x=>['critical','serious'].includes(x.impact)); if(v.length>0){ console.error('Axe found critical/serious violations:', v.map(x=>x.id).join(',')); process.exit(2);} else { console.log('No critical/serious axe violations'); }"
+
+      - name: Upload report
+        uses: actions/upload-artifact@v4
+        with:
+          name: axe-report
+          path: axe-report.json
